@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SUS KIGALI HAIRCUT{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
+</head>
+<body>
+  <!-- Top contact strip: click-to-call & click-to-WhatsApp on every page (Section 3.3) -->
+  <div class="topbar">
+    <div class="wrap topbar-inner">
+      <span>📍 {{ shop.address }}</span>
+      <span>🕘 {{ shop.hours }}</span>
+      <span class="topbar-actions">
+        <a href="tel:{{ shop.phone }}">📞 Call</a>
+        <a href="https://wa.me/{{ shop.whatsapp }}" target="_blank">💬 WhatsApp</a>
+      </span>
+    </div>
+  </div>
+
+  <header class="site-header">
+    <div class="wrap header-inner">
+      <a class="logo" href="{{ url_for('public.home') }}">
+        <span class="logo-mark">SUS</span>
+        <span class="logo-text">KIGALI HAIRCUT<small>EST. IN KIGALI</small></span>
+      </a>
+      <nav class="main-nav" id="nav">
+        <a href="{{ url_for('public.home') }}">Home</a>
+        <a href="{{ url_for('public.about') }}">About</a>
+        <a href="{{ url_for('public.services') }}">Services & Prices</a>
+        <a href="{{ url_for('public.team') }}">Our Team</a>
+        <a href="{{ url_for('public.contact') }}">Contact</a>
+        <a class="btn btn-gold" href="{{ url_for('public.booking') }}">Book Now</a>
+      </nav>
+      <button class="nav-toggle" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
+    </div>
+  </header>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <h3>{{ shop.name }}</h3>
+        <p>{{ shop.tagline }}</p>
+        <p>📍 {{ shop.address }}</p>
+      </div>
+      <div>
+        <h3>Hours</h3>
+        <p>{{ shop.hours }}</p>
+        <p>📞 <a href="tel:{{ shop.phone }}">{{ shop.phone }}</a></p>
+      </div>
+      <div>
+        <h3>Quick links</h3>
+        <p><a href="{{ url_for('public.services') }}">Services & Prices</a></p>
+        <p><a href="{{ url_for('public.booking') }}">Book an Appointment</a></p>
+        <p><a href="https://wa.me/{{ shop.whatsapp }}">Chat on WhatsApp</a></p>
+      </div>
+    </div>
+    <div class="footer-strip"><div class="wrap">© {{ 2026 }} {{ shop.name }} — Haircuts · Braiding · Nails · Kigali, Rwanda</div></div>
+  </footer>
+</body>
+</html>

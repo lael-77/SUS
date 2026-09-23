@@ -1,0 +1,54 @@
+{% extends "base_public.html" %}
+{% block title %}Book an Appointment — SUS KIGALI HAIRCUT{% endblock %}
+{% block content %}
+<section class="page-head">
+  <div class="wrap">
+    <h1>Book an Appointment</h1>
+    <p>Pick a service, pick your person, pick a time. We'll take care of the rest.</p>
+  </div>
+</section>
+<section class="section wrap">
+  <div class="booking-box card">
+    <form id="booking-form">
+      <label>1. Choose your service
+        <select id="service" required>
+          <option value="" disabled selected>Select a service…</option>
+          {% for s in services %}
+          <option value="{{ s.id }}" data-category="{{ s.category }}">{{ s.category }} — {{ s.name }} ({{ s.price|rwf }})</option>
+          {% endfor %}
+        </select>
+      </label>
+
+      <label>2. Choose your person
+        <select id="worker" required>
+          <option value="" disabled selected>Select a service first…</option>
+          <option value="any" hidden>Any available</option>
+        </select>
+      </label>
+
+      <label>3. Pick a date
+        <input type="date" id="date" required min="">
+      </label>
+
+      <label>4. Pick a time (real-time availability)
+        <select id="time" required>
+          <option value="" disabled selected>Select a date first…</option>
+        </select>
+      </label>
+
+      <div class="two-col">
+        <label>5. Your name
+          <input type="text" id="name" required placeholder="e.g. Jean Bosco">
+        </label>
+        <label>Phone (for confirmation & reminders)
+          <input type="tel" id="phone" required placeholder="+250 7XX XXX XXX">
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-gold btn-lg">Confirm Booking</button>
+      <p id="booking-msg" class="booking-msg"></p>
+    </form>
+  </div>
+</section>
+<script src="{{ url_for('static', filename='js/booking.js') }}"></script>
+{% endblock %}

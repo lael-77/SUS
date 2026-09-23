@@ -1,0 +1,59 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Overview — SUS Admin{% endblock %}
+{% block content %}
+<h1>Overview</h1>
+<p class="muted">The single-glance view of the business — today, this month, and the 14-day trend.</p>
+
+<div class="stat-grid">
+  <div class="stat"><span class="stat-label">Today's revenue</span><span class="stat-value">{{ today_revenue|rwf }}</span></div>
+  <div class="stat"><span class="stat-label">Clients served today</span><span class="stat-value">{{ clients_today }}</span></div>
+  <div class="stat"><span class="stat-label">Appointments today</span><span class="stat-value">{{ appts_today }}</span></div>
+  <div class="stat"><span class="stat-label">Top performer today</span>
+    <span class="stat-value small">{{ top_today[0] if top_today else '—' }}<br>
+    <small>{{ top_today[1]|rwf if top_today else '' }}</small></span></div>
+</div>
+
+<div class="stat-grid">
+  <div class="stat"><span class="stat-label">Month revenue</span><span class="stat-value">{{ month_revenue|rwf }}</span></div>
+  <div class="stat"><span class="stat-label">Month commission out</span><span class="stat-value">{{ month_commission|rwf }}</span></div>
+  <div class="stat"><span class="stat-label">Month profit (rev − comm − exp)</span><span class="stat-value">{{ month_profit|rwf }}</span></div>
+  <div class="stat"><span class="stat-label">Low-stock alerts</span><span class="stat-value">{{ low_stock|length }}</span></div>
+</div>
+
+<h2>Revenue trend — last 14 days</h2>
+<div class="chart">
+  {% for d in trend %}
+  <div class="chart-col" title="{{ d.day }} — income {{ d.revenue|rwf }}, commission {{ d.commission|rwf }}">
+    <div class="chart-bar-wrap">
+      <div class="chart-bar income" style="height: {{ (d.revenue / (trend|map(attribute='revenue')|max + 1) * 100)|round(0) if d.revenue else 0 }}%"></div>
+      <div class="chart-bar comm" style="height: {{ (d.commission / (trend|map(attribute='revenue')|max + 1) * 100)|round(0) if d.commission else 0 }}%"></div>
+    </div>
+    <span class="chart-label">{{ d.day[8:] }}</span>
+  </div>
+  {% endfor %}
+</div>
+<p class="legend"><span class="dot income"></span> Salon income &nbsp; <span class="dot comm"></span> Worker commission</p>
+
+<div class="two-pane">
+  <div class="pane">
+    <h2>Upcoming appointments</h2>
+    <table>
+      <tr><th>When</th><th>Client</th><th>Worker</th><th>Service</th><th>Status</th></tr>
+      {% for a in upcoming %}
+      <tr><td>{{ a.date }} {{ a.time }}</td><td>{{ a.client.name }}</td>
+          <td>{{ a.worker.full_name }}</td><td>{{ a.service.name }}</td>
+          <td><span class="badge {{ a.status }}">{{ a.status }}</span></td></tr>
+      {% else %}<tr><td colspan="5">No upcoming appointments.</td></tr>{% endfor %}
+    </table>
+  </div>
+  <div class="pane">
+    <h2>Low-stock alerts</h2>
+    <table>
+      <tr><th>Item</th><th>Stock</th><th>Reorder at</th></tr>
+      {% for i in low_stock %}
+      <tr><td>{{ i.item_name }}</td><td>{{ i.quantity }} {{ i.unit }}</td><td>{{ i.reorder_level }}</td></tr>
+      {% else %}<tr><td colspan="3">All stock levels healthy. ✅</td></tr>{% endfor %}
+    </table>
+  </div>
+</div>
+{% endblock %}

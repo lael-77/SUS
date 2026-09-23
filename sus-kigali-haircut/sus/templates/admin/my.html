@@ -1,0 +1,59 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}My workspace — SUS{% endblock %}
+{% block content %}
+<h1>My workspace — {{ w.full_name }}</h1>
+<p class="muted">{{ w.category }}{% if w.specialty %} — {{ w.specialty }}{% endif %} · Pay: {{ w.pay_type }} · Rate: {{ w.rate }}%</p>
+
+<div class="stat-grid">
+  <div class="stat"><span class="stat-label">Clients this month</span><span class="stat-value">{{ month_clients }}</span></div>
+  <div class="stat"><span class="stat-label">My revenue (month)</span><span class="stat-value">{{ month_revenue|rwf }}</span></div>
+  <div class="stat"><span class="stat-label">My commission (month)</span><span class="stat-value">{{ month_commission|rwf }}</span></div>
+  <div class="stat"><span class="stat-label">My tips (month)</span><span class="stat-value">{{ month_tips|rwf }}</span></div>
+</div>
+
+<h2>My upcoming schedule</h2>
+<table>
+  <tr><th>Date</th><th>Time</th><th>Client</th><th>Service</th><th>Status</th></tr>
+  {% for a in upcoming %}
+  <tr>
+    <td>{{ a.date }}</td>
+    <td>{{ a.time }}</td>
+    <td>{{ a.client.name }}<br><small class="muted">{{ a.client.phone }}</small></td>
+    <td>{{ a.service.name }}</td>
+    <td><span class="badge {{ a.status }}">{{ a.status }}</span></td>
+  </tr>
+  {% else %}<tr><td colspan="5">No upcoming bookings.</td></tr>{% endfor %}
+</table>
+
+<h2>My services this month</h2>
+<table>
+  <tr><th>Date</th><th>Time</th><th>Client</th><th>Amount</th><th>My commission</th><th>My tip</th><th>Payment</th></tr>
+  {% for t in month_tx %}
+  <tr>
+    <td>{{ t.date }}</td>
+    <td>{{ t.time }}</td>
+    <td>{{ t.client.name if t.client else '—' }}</td>
+    <td>{{ t.amount|rwf }}</td>
+    <td>{{ t.commission_amount|rwf }}</td>
+    <td>{{ t.tip|rwf }}</td>
+    <td>{{ t.payment_method }}</td>
+  </tr>
+  {% else %}<tr><td colspan="7">No services recorded yet this month.</td></tr>{% endfor %}
+</table>
+
+<h2>My payslips</h2>
+<table>
+  <tr><th>Period</th><th>Clients</th><th>Commission + tips</th><th>Bonus</th><th>Deductions</th><th>Net paid</th><th>Paid on</th></tr>
+  {% for p in payslips %}
+  <tr>
+    <td>{{ p.period_start }} → {{ p.period_end }}</td>
+    <td>{{ p.total_clients }}</td>
+    <td>{{ p.commission_earned|rwf }}</td>
+    <td>{{ p.bonus|rwf }}</td>
+    <td>{{ p.deductions|rwf }}</td>
+    <td><strong>{{ p.net_pay|rwf }}</strong></td>
+    <td>{{ p.paid_date }}</td>
+  </tr>
+  {% else %}<tr><td colspan="7">No payslips yet.</td></tr>{% endfor %}
+</table>
+{% endblock %}

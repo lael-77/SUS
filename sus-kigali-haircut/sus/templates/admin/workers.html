@@ -1,0 +1,96 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Workers — SUS Admin{% endblock %}
+{% block content %}
+<h1>Staff / Worker Management</h1>
+<p class="muted">One register for everyone who earns money for the salon — barbers, hairstylists, nail technicians, and any future category.</p>
+
+<div class="toolbar">
+  <form method="get" class="inline-form">
+    <select name="category" onchange="this.form.submit()">
+      <option value="">All categories</option>
+      {% for c in categories %}
+      <option value="{{ c }}" {{ 'selected' if category == c }}>{{ c }}</option>
+      {% endfor %}
+    </select>
+  </form>
+  <button class="btn-gold" onclick="toggleForm('worker-form')">＋ Add worker</button>
+</div>
+
+<form method="post" action="{{ url_for('admin.worker_save') }}" id="worker-form" class="panel hidden">
+  <h2 id="worker-form-title">Add worker</h2>
+  <input type="hidden" name="id" id="wf-id">
+  <div class="form-grid">
+    <label>Full name<input name="full_name" id="wf-name" required></label>
+    <label>Phone<input name="phone" id="wf-phone"></label>
+    <label>Category
+      <select name="category" id="wf-category">
+        {% for c in categories %}<option>{{ c }}</option>{% endfor %}
+      </select></label>
+    <label>Specialty<input name="specialty" id="wf-specialty"></label>
+    <label>Pay type
+      <select name="pay_type" id="wf-paytype">
+        <option value="commission">Commission</option>
+        <option value="fixed">Fixed salary</option>
+        <option value="hybrid">Hybrid (base + commission)</option>
+      </select></label>
+    <label>Base salary (RWF, fixed/hybrid only)<input type="number" name="base_salary" id="wf-salary" value="0"></label>
+    <label>Commission rate % (blank = shop default {{ default_rate }}%)<input type="number" step="0.5" name="commission_rate" id="wf-rate"></label>
+    <label>Status
+      <select name="status"><option value="active">Active</option><option value="inactive">Inactive</option></select></label>
+    <label>Login email (optional)<input type="email" name="email" id="wf-email"></label>
+    <label>Login password (leave blank to keep)<input type="password" name="password"></label>
+  </div>
+  <button class="btn-gold" type="submit">Save worker</button>
+</form>
+
+<table>
+  <tr><th>Worker</th><th>Category</th><th>Specialty</th><th>Rate</th><th>Pay type</th>
+      <th>This month: clients</th><th>Revenue</th><th>Commission earned</th><th>Status</th><th></th></tr>
+  {% for w in workers %}
+  <tr>
+    <td><strong>{{ w.full_name }}</strong><br><small>{{ w.phone or '' }}</small></td>
+    <td>{{ w.category }}</td>
+    <td>{{ w.specialty or '—' }}</td>
+    <td>{{ w.rate }}%</td>
+    <td>{{ w.pay_type }}</td>
+    <td>{{ perf[w.id].clients }}</td>
+    <td>{{ perf[w.id].revenue|rwf }}</td>
+    <td><strong>{{ perf[w.id].commission|rwf }}</strong></td>
+    <td><span class="badge {{ 'confirmed' if w.status == 'active' else 'cancelled' }}">{{ w.status }}</span></td>
+    <td class="actions">
+      <button class="btn-sm" onclick='editWorker({{ {
+        "id": w.id, "name": w.full_name, "phone": w.phone or "", "category": w.category,
+        "specialty": w.specialty or "", "pay_type": w.pay_type, "base_salary": w.base_salary,
+        "rate": w.commission_rate, "email": (w.user.email if w.user else ""), "status": w.status }|tojson }})'>Edit</button>
+      <form method="post" action="{{ url_for('admin.worker_toggle', wid=w.id) }}" class="inline">
+        <button class="btn-sm">{{ 'Deactivate' if w.status == 'active' else 'Reactivate' }}</button>
+      </form>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+
+<script>
+function toggleForm(id) {
+  document.getElementById(id).classList.toggle('hidden');
+  if (id === 'worker-form' && document.getElementById(id).classList.contains('hidden') === false) {
+    document.getElementById('wf-id').value = '';
+    document.getElementById('wf-title');
+  }
+}
+function editWorker(w) {
+  document.getElementById('worker-form').classList.remove('hidden');
+  document.getElementById('wf-id').value = w.id;
+  document.getElementById('wf-name').value = w.name;
+  document.getElementById('wf-phone').value = w.phone;
+  document.getElementById('wf-category').value = w.category;
+  document.getElementById('wf-specialty').value = w.specialty;
+  document.getElementById('wf-paytype').value = w.pay_type;
+  document.getElementById('wf-salary').value = w.base_salary;
+  document.getElementById('wf-rate').value = w.rate === null ? '' : w.rate;
+  document.getElementById('wf-email').value = w.email;
+  document.getElementById('worker-form-title').innerText = 'Edit worker';
+  document.getElementById('worker-form').scrollIntoView({ behavior: 'smooth' });
+}
+</script>
+{% endblock %}

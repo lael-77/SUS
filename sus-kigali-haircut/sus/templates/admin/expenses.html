@@ -1,0 +1,38 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Expenses — SUS Admin{% endblock %}
+{% block content %}
+<h1>Expense Management</h1>
+<p class="muted">Rent, utilities, restocking, repairs — so the dashboard can show true profit, not just revenue.</p>
+
+<div class="stat-grid">
+  <div class="stat"><span class="stat-label">Expenses this month</span><span class="stat-value">{{ month_total|rwf }}</span></div>
+</div>
+
+<div class="panel">
+  <h2>Record an expense</h2>
+  <form method="post" action="{{ url_for('admin.expense_save') }}">
+    <div class="form-grid">
+      <label>Category
+        <select name="category">
+          {% for c in categories %}<option>{{ c }}</option>{% endfor %}
+        </select></label>
+      <label>Description<input name="description" placeholder="e.g. Electricity bill"></label>
+      <label>Amount (RWF)<input type="number" name="amount" required></label>
+      <label>Date<input type="date" name="date" value="{{ today or '' }}"></label>
+    </div>
+    <button class="btn-gold" type="submit">Add expense</button>
+  </form>
+</div>
+
+<table>
+  <tr><th>Date</th><th>Category</th><th>Description</th><th>Amount</th></tr>
+  {% for e in expenses %}
+  <tr>
+    <td>{{ e.date }}</td>
+    <td>{{ e.category }}</td>
+    <td>{{ e.description or '—' }}</td>
+    <td><strong>{{ e.amount|rwf }}</strong></td>
+  </tr>
+  {% else %}<tr><td colspan="4">No expenses recorded.</td></tr>{% endfor %}
+</table>
+{% endblock %}

@@ -1,0 +1,26 @@
+{% extends "base_public.html" %}
+{% block title %}Our Team — SUS KIGALI HAIRCUT{% endblock %}
+{% block content %}
+<section class="page-head">
+  <div class="wrap">
+    <h1>Our Team</h1>
+    <p>Pick your barber, hairstylist or nail technician — or take whoever is free.</p>
+  </div>
+</section>
+<section class="section wrap">
+  {% for category, members in grouped.items() %}
+  <h2 class="category-title">{{ category }}</h2>
+  <div class="card-grid">
+    {% for w in members %}
+    <div class="card person">
+      <div class="avatar">{{ w.full_name[0] }}</div>
+      <h3>{{ w.full_name }}</h3>
+      <p class="muted">{{ w.specialty or category }}</p>
+      <p class="muted small">With us since {{ w.date_joined[:4] }}</p>
+      <a class="btn btn-outline" href="{{ url_for('public.booking') }}">Book with {{ w.full_name.split()[0] }}</a>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+</section>
+{% endblock %}

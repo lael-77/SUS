@@ -1,0 +1,73 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Appointments — SUS Admin{% endblock %}
+{% block content %}
+<h1>Appointment Management</h1>
+<p class="muted">All bookings from the website plus walk-ins added by staff. Marking "completed" triggers commission calculation.</p>
+
+<div class="toolbar">
+  <form method="get" class="inline-form">
+    <input type="date" name="date" value="{{ date }}" onchange="this.form.submit()">
+  </form>
+  <button class="btn-gold" onclick="toggleForm('appt-form')">＋ Add walk-in</button>
+</div>
+
+<form method="post" action="{{ url_for('admin.appointment_add') }}" id="appt-form" class="panel hidden">
+  <h2>Add walk-in booking</h2>
+  <div class="form-grid">
+    <label>Client
+      <select name="client_id">
+        <option value="">— new client below —</option>
+        {% for c in clients %}<option value="{{ c.id }}">{{ c.name }} ({{ c.phone }})</option>{% endfor %}
+      </select></label>
+    <label>New client name<input name="client_name"></label>
+    <label>New client phone<input name="client_phone"></label>
+    <label>Worker
+      <select name="worker_id" required>
+        {% for w in workers %}<option value="{{ w.id }}">{{ w.full_name }} ({{ w.category }})</option>{% endfor %}
+      </select></label>
+    <label>Service
+      <select name="service_id" required>
+        {% for s in services %}<option value="{{ s.id }}">{{ s.category }} — {{ s.name }}</option>{% endfor %}
+      </select></label>
+    <label>Date<input type="date" name="date" value="{{ date }}"></label>
+    <label>Time<input type="time" name="time" required></label>
+  </div>
+  <button class="btn-gold" type="submit">Add booking</button>
+</form>
+
+<table>
+  <tr><th>Time</th><th>Client</th><th>Worker</th><th>Service</th><th>Source</th><th>Status</th><th>Actions</th></tr>
+  {% for a in appts %}
+  <tr>
+    <td>{{ a.time }}</td>
+    <td>{{ a.client.name }}<br><small class="muted">{{ a.client.phone }}</small></td>
+    <td>{{ a.worker.full_name }}</td>
+    <td>{{ a.service.name }}</td>
+    <td><small>{{ a.source }}</small></td>
+    <td><span class="badge {{ a.status }}">{{ a.status }}</span></td>
+    <td class="actions">
+      {% if a.status in ('pending', 'confirmed') %}
+      <form method="post" action="{{ url_for('admin.appointment_status', aid=a.id) }}" class="inline">
+        <input type="hidden" name="status" value="completed">
+        <button class="btn-sm gold">✔ Complete (record income)</button>
+      </form>
+      <form method="post" action="{{ url_for('admin.appointment_status', aid=a.id) }}" class="inline">
+        <input type="hidden" name="status" value="cancelled">
+        <button class="btn-sm">Cancel</button>
+      </form>
+      <form method="post" action="{{ url_for('admin.appointment_status', aid=a.id) }}" class="inline">
+        <input type="hidden" name="status" value="no_show">
+        <button class="btn-sm danger">No-show</button>
+      </form>
+      {% else %}
+      <small class="muted">—</small>
+      {% endif %}
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="7">No appointments on this date.</td></tr>{% endfor %}
+</table>
+
+<script>
+function toggleForm(id) { document.getElementById(id).classList.toggle('hidden'); }
+</script>
+{% endblock %}

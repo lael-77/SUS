@@ -1,0 +1,29 @@
+{% extends "base_public.html" %}
+{% block title %}Contact & Location — SUS KIGALI HAIRCUT{% endblock %}
+{% block content %}
+<section class="page-head">
+  <div class="wrap">
+    <h1>Contact & Location</h1>
+    <p>Walk-ins welcome — but booking ahead guarantees your slot.</p>
+  </div>
+</section>
+<section class="section wrap">
+  <div class="contact-grid">
+    <div class="contact-card card">
+      <h3>📞 Call us</h3>
+      <p><a class="big-link" href="tel:{{ shop.phone }}">{{ shop.phone }}</a></p>
+      <h3>💬 WhatsApp</h3>
+      <p><a class="btn btn-gold" href="https://wa.me/{{ shop.whatsapp }}" target="_blank">Message us on WhatsApp</a></p>
+      <h3>🕘 Opening hours</h3>
+      <p>{{ shop.hours }}</p>
+    </div>
+    <div class="map-card card">
+      <h3>📍 Find us</h3>
+      <p>{{ shop.address }}</p>
+      <div class="map-placeholder">
+        <p>Google Maps embed goes here<br><small>(KN 4 Ave, Kigali City Centre)</small></p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

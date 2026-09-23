@@ -1,0 +1,183 @@
+/* SUS KIGALI HAIRCUT — public site
+   Heritage barbershop palette: dark charcoal, brass gold, cream (documentation §2) */
+
+:root {
+  --dark: #1b1b1b;
+  --dark2: #232323;
+  --gold: #d4af37;
+  --gold-soft: #e8c96a;
+  --cream: #f5f0e6;
+  --ink: #2a2a2a;
+  --muted: #8a8578;
+  --line: #e2dccb;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: Georgia, "Times New Roman", serif;
+  background: var(--cream);
+  color: var(--ink);
+  line-height: 1.6;
+}
+
+.wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+.muted { color: var(--muted); }
+
+a { color: inherit; text-decoration: none; }
+img { max-width: 100%; display: block; }
+
+h1, h2, h3 { font-weight: 600; letter-spacing: .02em; }
+
+/* ---------- top contact strip ---------- */
+.topbar { background: var(--dark); color: var(--cream); font-size: .85rem; }
+.topbar-inner { display: flex; gap: 18px; justify-content: space-between; align-items: center; padding: 8px 20px; }
+.topbar-actions { display: flex; gap: 16px; }
+.topbar-actions a { color: var(--gold); font-weight: bold; }
+.topbar-actions a:hover { color: var(--gold-soft); }
+
+/* ---------- header ---------- */
+.site-header { background: var(--dark2); border-bottom: 3px solid var(--gold); }
+.header-inner { display: flex; align-items: center; justify-content: space-between; padding: 18px 20px; }
+.logo { display: flex; align-items: center; gap: 12px; }
+.logo-mark {
+  font-size: 1.6rem; font-weight: bold; color: var(--dark);
+  background: var(--gold); padding: 8px 14px; letter-spacing: .1em;
+}
+.logo-text { color: var(--cream); font-size: 1.1rem; letter-spacing: .15em; display: flex; flex-direction: column; }
+.logo-text small { font-size: .6rem; color: var(--gold); letter-spacing: .3em; }
+
+.main-nav { display: flex; align-items: center; gap: 22px; color: var(--cream); font-size: .95rem; }
+.main-nav a:hover { color: var(--gold); }
+.main-nav .btn { color: var(--dark); }
+
+.btn {
+  display: inline-block; padding: 10px 22px; background: var(--gold);
+  color: var(--dark); font-weight: bold; letter-spacing: .05em;
+  border: none; cursor: pointer; font-family: inherit; font-size: .95rem;
+}
+.btn:hover { background: var(--gold-soft); }
+.btn-dark { background: var(--dark); color: var(--cream); }
+.btn-dark:hover { background: #000; color: var(--gold); }
+.btn-gold { background: var(--gold); color: var(--dark); }
+.btn-gold:hover { background: var(--gold-soft); }
+.btn-ghost { background: transparent; color: var(--cream); border: 2px solid var(--gold); }
+.btn-ghost:hover { background: var(--gold); color: var(--dark); }
+.btn-lg { font-size: 1.05rem; padding: 14px 34px; }
+
+.nav-toggle { display: none; background: none; border: none; color: var(--gold); font-size: 1.8rem; cursor: pointer; }
+
+/* ---------- hero ---------- */
+.hero {
+  background: linear-gradient(rgba(27,27,27,.82), rgba(27,27,27,.82)), var(--dark2);
+  color: var(--cream); text-align: center; padding: 90px 20px;
+}
+.hero h1 { font-size: 2.6rem; color: var(--gold); margin-bottom: 12px; letter-spacing: .06em; }
+.hero p { font-size: 1.15rem; max-width: 640px; margin: 0 auto 26px; color: #ddd6c4; }
+.hero .btn { font-size: 1.05rem; padding: 14px 34px; }
+.hero-cta { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+.hero-strip {
+  display: flex; gap: 24px; justify-content: center; flex-wrap: wrap; margin-top: 46px;
+  color: #cfc9b8; font-size: .9rem; letter-spacing: .04em;
+}
+.hero-strip strong { color: var(--gold); }
+.hero-sub { margin-top: 10px; font-size: .95rem; color: #b8b2a2; }
+
+/* ---------- sections ---------- */
+.section { padding: 60px 20px; max-width: 1100px; margin: 0 auto; }
+.section h2 { font-size: 1.8rem; margin-bottom: 8px; }
+.section-head { text-align: center; margin-bottom: 36px; }
+.section-head .rule {
+  display: block; width: 90px; height: 3px; background: var(--gold);
+  margin: 12px auto 0;
+}
+.section.alt { background: var(--dark2); color: var(--cream); }
+.section.alt h2 { color: var(--gold); }
+.section.alt .muted { color: #b8b2a2; }
+
+/* cards */
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 22px; }
+.card {
+  background: #fff; border: 1px solid var(--line); border-top: 3px solid var(--gold);
+  padding: 26px 22px;
+}
+.card h3 { margin-bottom: 8px; }
+.price { color: var(--gold); font-weight: bold; font-size: 1.15rem; }
+.dur { color: var(--muted); font-size: .85rem; }
+.card .btn { margin-top: 14px; }
+
+.team-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 22px; }
+.member { background: #fff; border: 1px solid var(--line); padding: 22px; text-align: center; }
+.member .avatar {
+  width: 84px; height: 84px; border-radius: 50%; margin: 0 auto 12px;
+  background: var(--dark); color: var(--gold); font-size: 2rem;
+  display: flex; align-items: center; justify-content: center; font-weight: bold;
+}
+.member .spec { color: var(--muted); font-style: italic; }
+
+/* price list */
+.price-list { max-width: 760px; margin: 0 auto; }
+.price-row {
+  display: flex; justify-content: space-between; gap: 12px; align-items: baseline;
+  padding: 12px 4px; border-bottom: 1px dotted var(--line);
+}
+.price-row .price { font-size: 1rem; }
+.cat-title { margin: 30px 0 6px; color: var(--dark); border-left: 4px solid var(--gold); padding-left: 10px; }
+
+/* reviews */
+.quote { font-style: italic; color: #ddd6c4; margin-bottom: 10px; }
+.stars { color: var(--gold); letter-spacing: 2px; }
+
+/* forms */
+.form { max-width: 620px; margin: 0 auto; background: #fff; border: 1px solid var(--line); padding: 30px; }
+.form label { display: block; margin-bottom: 16px; font-weight: bold; }
+.form input, .form select, .form textarea {
+  display: block; width: 100%; margin-top: 6px; padding: 11px 12px;
+  border: 1px solid var(--line); background: var(--cream); font-family: inherit; font-size: 1rem;
+}
+.form .btn { width: 100%; margin-top: 6px; }
+.form-msg { margin-top: 14px; padding: 12px; font-weight: bold; }
+.form-msg.ok { background: #e6f4e6; color: #1c6b1c; border: 1px solid #a5d6a5; }
+.form-msg.err { background: #f7e6e6; color: #a11c1c; border: 1px solid #e0a5a5; }
+
+/* booking (Section 3.2 — real-time availability) */
+.booking-box { max-width: 720px; margin: 0 auto; padding: 34px 30px; }
+.booking-box label { display: block; margin-bottom: 16px; font-weight: bold; }
+.booking-box input, .booking-box select {
+  display: block; width: 100%; margin-top: 6px; padding: 11px 12px;
+  border: 1px solid var(--line); background: var(--cream); font-family: inherit; font-size: 1rem;
+}
+.booking-box .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 620px) { .booking-box .two-col { grid-template-columns: 1fr; } }
+.booking-msg { margin-top: 14px; padding: 12px; font-weight: bold; }
+.booking-msg:empty { display: none; }
+.booking-msg.ok { background: #e6f4e6; color: #1c6b1c; border: 1px solid #a5d6a5; }
+.booking-msg.err { background: #f7e6e6; color: #a11c1c; border: 1px solid #e0a5a5; }
+
+/* contact */
+.contact-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 22px; }
+.contact-grid .card p { margin: 6px 0; }
+.big-link { font-size: 1.4rem; font-weight: bold; color: var(--dark); text-decoration: none; }
+.big-link:hover { color: var(--gold); }
+.center { text-align: center; }
+
+/* footer */
+.site-footer { background: var(--dark); color: var(--cream); margin-top: 40px; }
+.footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 26px; padding: 40px 20px; }
+.site-footer h3 { color: var(--gold); margin-bottom: 10px; }
+.site-footer p { color: #cfc9b8; margin: 4px 0; }
+.site-footer a:hover { color: var(--gold); }
+.footer-strip { background: var(--gold); color: var(--dark); text-align: center; padding: 10px; font-weight: bold; font-size: .85rem; }
+
+/* mobile */
+@media (max-width: 760px) {
+  .nav-toggle { display: block; }
+  .main-nav {
+    display: none; position: absolute; top: 100%; left: 0; right: 0;
+    background: var(--dark2); flex-direction: column; padding: 18px; gap: 14px;
+  }
+  .main-nav.open { display: flex; }
+  .site-header { position: relative; }
+  .hero h1 { font-size: 1.9rem; }
+  .topbar-inner span:nth-child(2) { display: none; }
+}

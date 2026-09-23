@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Admin — SUS KIGALI HAIRCUT{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+</head>
+<body class="admin-body">
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-brand">SUS <span>ADMIN</span></div>
+    <nav>
+      {% set role = session.get('role') %}
+      {% if role == 'super_admin' or role == 'manager' %}
+      <a href="{{ url_for('admin.overview') }}">📊 Overview</a>
+      <a href="{{ url_for('admin.calendar_view') }}">🗓 Calendar & Trends</a>
+      <a href="{{ url_for('admin.transactions') }}">💰 Record Transaction</a>
+      <a href="{{ url_for('admin.appointments') }}">📅 Appointments</a>
+      <a href="{{ url_for('admin.workers') }}">✂️ Workers</a>
+      <a href="{{ url_for('admin.services') }}">🧾 Services & Prices</a>
+      <a href="{{ url_for('admin.clients') }}">👥 Clients</a>
+      <a href="{{ url_for('admin.inventory') }}">📦 Inventory</a>
+      <a href="{{ url_for('admin.expenses') }}">🧮 Expenses</a>
+      <a href="{{ url_for('admin.reports') }}">📈 Reports</a>
+      {% endif %}
+      {% if role == 'super_admin' %}
+      <a href="{{ url_for('admin.payroll') }}">🏦 Payroll</a>
+      <a href="{{ url_for('admin.settings') }}">⚙️ Settings</a>
+      {% endif %}
+      {% if role == 'worker' %}
+      <a href="{{ url_for('admin.my') }}">📆 My Schedule</a>
+      {% endif %}
+    </nav>
+    <a class="sidebar-bottom" href="{{ url_for('public.home') }}">← Public website</a>
+  </aside>
+
+  <div class="admin-main">
+    <header class="admin-topbar">
+      <button class="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <span class="shop-name">{{ shop.name if shop else 'SUS KIGALI HAIRCUT' }}</span>
+      <span class="spacer"></span>
+      <span class="user-chip">{{ current_user_name }}</span>
+      <a class="btn-logout" href="{{ url_for('admin.logout') }}">Log out</a>
+    </header>
+    <div class="admin-content">
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</body>
+</html>

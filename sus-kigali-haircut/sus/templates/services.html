@@ -1,0 +1,32 @@
+{% extends "base_public.html" %}
+{% block title %}Services & Prices — SUS KIGALI HAIRCUT{% endblock %}
+{% block content %}
+<section class="page-head">
+  <div class="wrap">
+    <h1>Services & Prices</h1>
+    <p>All prices in RWF. Duration included so you can plan your visit.</p>
+  </div>
+</section>
+<section class="section wrap">
+  {% for category, items in grouped.items() %}
+  <h2 class="category-title">{{ category }}</h2>
+  <div class="service-table">
+    {% for s in items %}
+    <div class="service-row">
+      <div>
+        <strong>{{ s.name }}</strong>
+        <p class="muted">{{ s.description }}</p>
+      </div>
+      <div class="service-meta">
+        <span>{{ s.duration_minutes }} min</span>
+        <strong>{{ s.price|rwf }}</strong>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% endfor %}
+  <p class="center" style="margin-top:2rem">
+    <a class="btn btn-gold btn-lg" href="{{ url_for('public.booking') }}">Book an Appointment</a>
+  </p>
+</section>
+{% endblock %}

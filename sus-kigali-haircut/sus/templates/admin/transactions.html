@@ -1,0 +1,90 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Transactions — SUS Admin{% endblock %}
+{% block content %}
+<h1>Transaction Recording</h1>
+<p class="muted">Quick "record a service" — commission is calculated automatically the moment you save. Works the same for a haircut, a braid, or a manicure.</p>
+
+<div class="panel" id="record-form">
+  <h2>Record a service</h2>
+  <form method="post" action="{{ url_for('admin.transaction_record') }}">
+    <div class="form-grid">
+      <label>Worker *
+        <select name="worker_id" required>
+          <option value="" disabled selected>Select worker…</option>
+          {% for w in workers %}<option value="{{ w.id }}">{{ w.full_name }} ({{ w.category }})</option>{% endfor %}
+        </select></label>
+      <label>Payment method
+        <select name="payment_method">
+          <option>Cash</option><option>MTN MoMo</option><option>Airtel Money</option><option>Card</option>
+        </select></label>
+      <label>Date<input type="date" name="date" value="{{ date }}"></label>
+      <label>Time<input type="time" name="time" value="{{ now or '' }}"></label>
+    </div>
+    <label class="block-label">Services * <small class="muted">(multiple allowed — e.g. haircut + beard trim)</small></label>
+    <div class="service-checks">
+      {% for s in services %}
+      <label class="check-chip"><input type="checkbox" name="service_ids" value="{{ s.id }}"
+        data-price="{{ s.price }}" onchange="updateTotal()">{{ s.name }} — {{ s.price|rwf }}</label>
+      {% endfor %}
+    </div>
+    <p class="total-line">Total: <strong id="tx-total">0 RWF</strong></p>
+    <div class="form-grid">
+      <label>Discount (RWF)<input type="number" name="discount" value="0" min="0" onchange="updateTotal()"></label>
+      <label>Discount reason (required if discount)<input name="discount_reason"></label>
+      <label>Tip (RWF — goes 100% to worker)<input type="number" name="tip" value="0" min="0"></label>
+      <label>Client name (optional)<input name="client_name" placeholder="New client name"></label>
+      <label>Client phone (optional, recommended)<input name="client_phone" placeholder="+250 7XX XXX XXX"></label>
+      <label>Note<input name="note"></label>
+    </div>
+    <button class="btn-gold btn-lg" type="submit">💰 Record & calculate commission</button>
+  </form>
+</div>
+
+<div class="toolbar">
+  <form method="get" class="inline-form">
+    <input type="date" name="date" value="{{ date }}">
+    <select name="worker_id">
+      <option value="">All workers</option>
+      {% for w in workers %}<option value="{{ w.id }}" {{ 'selected' if worker_id == w.id }}>{{ w.full_name }}</option>{% endfor %}
+    </select>
+    <button class="btn-sm">Filter</button>
+    <a class="btn-sm" href="{{ url_for('admin.calendar_export', start=date, end=date) }}">⬇ Export CSV</a>
+  </form>
+</div>
+
+<table>
+  <tr><th>Time</th><th>Worker</th><th>Services</th><th>Client</th><th>Amount</th>
+      <th>Discount</th><th>Tip</th><th>Commission</th><th>Salon</th><th>Payment</th><th>Status</th><th></th></tr>
+  {% for t in txs %}
+  <tr>
+    <td>{{ t.date }}<br><small>{{ t.time }}</small></td>
+    <td>{{ t.worker.full_name }}</td>
+    <td>{% for i in t.items %}{{ i.service_name }}{% if not loop.last %}, {% endif %}{% endfor %}</td>
+    <td>{{ t.client.name if t.client else '—' }}</td>
+    <td><strong>{{ t.amount|rwf }}</strong></td>
+    <td>{{ t.discount or '—' }}</td>
+    <td>{{ t.tip or '—' }}</td>
+    <td>{{ t.commission_amount|rwf }}</td>
+    <td>{{ t.salon_amount|rwf }}</td>
+    <td>{{ t.payment_method }}</td>
+    <td><span class="badge {{ 'confirmed' if t.status == 'completed' else 'cancelled' }}">{{ t.status }}</span></td>
+    <td>
+      {% if session.get('role') == 'super_admin' and t.status == 'completed' %}
+      <form method="post" action="{{ url_for('admin.transaction_void', tid=t.id) }}" class="inline">
+        <button class="btn-sm danger">Void</button>
+      </form>
+      {% endif %}
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="12">No transactions on this date.</td></tr>{% endfor %}
+</table>
+
+<script>
+function updateTotal() {
+  let total = 0;
+  document.querySelectorAll('input[name="service_ids"]:checked').forEach(c => total += +c.dataset.price);
+  const disc = +document.querySelector('input[name="discount"]').value || 0;
+  document.getElementById('tx-total').innerText = (Math.max(0, total - disc)).toLocaleString() + ' RWF';
+}
+</script>
+{% endblock %}

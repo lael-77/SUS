@@ -1,0 +1,28 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Day detail — SUS Admin{% endblock %}
+{% block content %}
+<h1>Day breakdown — {{ day }}</h1>
+
+<div class="stat-grid">
+  <div class="stat"><span class="stat-label">Total income</span><span class="stat-value">{{ total|rwf }}</span></div>
+  <div class="stat"><span class="stat-label">Commission</span><span class="stat-value">{{ commission|rwf }}</span></div>
+  <div class="stat"><span class="stat-label">Tips</span><span class="stat-value">{{ tips|rwf }}</span></div>
+</div>
+
+<table>
+  <tr><th>Time</th><th>Worker</th><th>Services</th><th>Client</th><th>Amount</th><th>Commission</th><th>Payment</th></tr>
+  {% for t in txs %}
+  <tr>
+    <td>{{ t.time }}</td>
+    <td>{{ t.worker.full_name }}</td>
+    <td>{% for i in t.items %}{{ i.service_name }}{% if not loop.last %}, {% endif %}{% endfor %}</td>
+    <td>{{ t.client.name if t.client else '—' }}</td>
+    <td>{{ t.amount|rwf }}</td>
+    <td>{{ t.commission_amount|rwf }}</td>
+    <td>{{ t.payment_method }}</td>
+  </tr>
+  {% else %}<tr><td colspan="7">No transactions recorded on this day.</td></tr>{% endfor %}
+</table>
+
+<a href="{{ url_for('admin.calendar_view') }}">← Back to calendar</a>
+{% endblock %}

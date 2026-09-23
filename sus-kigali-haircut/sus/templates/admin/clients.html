@@ -1,0 +1,47 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Clients — SUS Admin{% endblock %}
+{% block content %}
+<h1>Client Management (mini-CRM)</h1>
+<p class="muted">Visit history, loyalty points, and preferred workers — used for reminders and marketing.</p>
+
+<div class="toolbar">
+  <button class="btn-gold" onclick="toggleForm('client-form')">＋ Add client</button>
+</div>
+
+<form method="post" action="{{ url_for('admin.client_save') }}" id="client-form" class="panel hidden">
+  <h2>Add client</h2>
+  <input type="hidden" name="id">
+  <div class="form-grid">
+    <label>Name<input name="name" required></label>
+    <label>Phone<input name="phone" required></label>
+    <label>Email<input type="email" name="email"></label>
+    <label>Preferred worker
+      <select name="preferred_worker_id">
+        <option value="">None</option>
+        {% for w in workers %}<option value="{{ w.id }}">{{ w.full_name }}</option>{% endfor %}
+      </select></label>
+    <label class="span2">Style / notes<input name="notes"></label>
+  </div>
+  <button class="btn-gold" type="submit">Save client</button>
+</form>
+
+<table>
+  <tr><th>Client</th><th>Phone</th><th>Visits</th><th>Total spent</th>
+      <th>Loyalty points</th><th>Preferred worker</th><th>Notes</th></tr>
+  {% for c in clients %}
+  <tr>
+    <td><strong>{{ c.name }}</strong></td>
+    <td>{{ c.phone }}</td>
+    <td>{{ c.visit_count }}</td>
+    <td>{{ c.total_spent|rwf }}</td>
+    <td>{{ c.loyalty_points }}</td>
+    <td>{{ c.preferred_worker.full_name if c.preferred_worker else '—' }}</td>
+    <td class="muted">{{ c.notes or '—' }}</td>
+  </tr>
+  {% else %}<tr><td colspan="7">No clients yet.</td></tr>{% endfor %}
+</table>
+
+<script>
+function toggleForm(id) { document.getElementById(id).classList.toggle('hidden'); }
+</script>
+{% endblock %}

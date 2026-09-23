@@ -1,0 +1,70 @@
+{% extends "base_public.html" %}
+{% block content %}
+<section class="hero">
+  <div class="wrap hero-inner">
+    <p class="hero-eyebrow">Kigali's heritage grooming shop</p>
+    <h1>Where Kigali comes<br>for a <em>sharp cut.</em></h1>
+    <p class="hero-sub">Classic barbership craft, female hair styling, and nail care —
+      all under one roof, in the heart of Kigali.</p>
+    <div class="hero-cta">
+      <a class="btn btn-gold btn-lg" href="{{ url_for('public.booking') }}">Book Now</a>
+      <a class="btn btn-ghost btn-lg" href="{{ url_for('public.services') }}">See Services & Prices</a>
+    </div>
+    <div class="hero-strip">
+      <span>💈 Barbering</span><span>💇 Female Hair</span><span>💅 Nails</span>
+    </div>
+  </div>
+</section>
+
+<section class="section wrap">
+  <h2 class="section-title">Featured Services</h2>
+  <div class="card-grid">
+    {% for s in featured %}
+    <div class="card">
+      <h3>{{ s.name }}</h3>
+      <p class="muted">{{ s.description }}</p>
+      <p class="price">{{ s.price|rwf }} <small>· {{ s.duration_minutes }} min</small></p>
+    </div>
+    {% endfor %}
+  </div>
+  <p class="center"><a class="btn btn-outline" href="{{ url_for('public.services') }}">Full Menu</a></p>
+</section>
+
+<section class="section alt">
+  <div class="wrap">
+    <h2 class="section-title">Meet the Team</h2>
+    <div class="card-grid">
+      {% for w in team %}
+      <div class="card person">
+        <div class="avatar">{{ w.full_name[0] }}</div>
+        <h3>{{ w.full_name }}</h3>
+        <p class="muted">{{ w.category }}{% if w.specialty %} — {{ w.specialty }}{% endif %}</p>
+        <a class="btn btn-outline" href="{{ url_for('public.booking') }}">Book with {{ w.full_name.split()[0] }}</a>
+      </div>
+      {% endfor %}
+    </div>
+    <p class="center"><a class="btn btn-outline" href="{{ url_for('public.team') }}">The Whole Team</a></p>
+  </div>
+</section>
+
+<section class="section wrap">
+  <h2 class="section-title">What Clients Say</h2>
+  <div class="card-grid">
+    {% for r in reviews %}
+    <div class="card review">
+      <p class="stars">{{ '★' * r.rating }}</p>
+      <p>"{{ r.comment }}"</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="hours-strip">
+  <div class="wrap hours-inner">
+    <div><strong>Opening Hours</strong><p>{{ shop.hours }}</p></div>
+    <div><strong>Find Us</strong><p>{{ shop.address }}</p></div>
+    <div><strong>Call / WhatsApp</strong><p><a href="tel:{{ shop.phone }}">{{ shop.phone }}</a></p></div>
+    <div><a class="btn btn-gold" href="{{ url_for('public.booking') }}">Book Now</a></div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "admin/base_admin.html" %}
+{% block title %}Calendar — SUS Admin{% endblock %}
+{% block content %}
+<h1>Income Calendar</h1>
+<p class="muted">Daily income, commission and client counts at a glance. Select a worker to turn this into their salary tracker.</p>
+
+<form method="get" class="inline-form panel">
+  <select name="worker_id" onchange="this.form.submit()">
+    <option value="">— All workers —</option>
+    {% for w in workers %}
+    <option value="{{ w.id }}" {% if w.id == worker_id %}selected{% endif %}>{{ w.full_name }}</option>
+    {% endfor %}
+  </select>
+  <a href="?y={{ y }}&m={{ m - 1 if m > 1 else 12 }}{% if worker_id %}&worker_id={{ worker_id }}{% endif %}">← Prev</a>
+  <strong>{{ month_name }} {{ y }}</strong>
+  <a href="?y={{ y }}&m={{ m + 1 if m < 12 else 1 }}{% if worker_id %}&worker_id={{ worker_id }}{% endif %}">Next →</a>
+</form>
+
+<div class="stat-grid">
+  <div class="stat"><span class="stat-label">Income — {{ month_name }}</span><span class="stat-value">{{ month_income|rwf }}</span></div>
+  <div class="stat"><span class="stat-label">Commission + tips</span><span class="stat-value">{{ month_commission|rwf }}</span></div>
+  <div class="stat"><span class="stat-label">Clients</span><span class="stat-value">{{ month_clients }}</span></div>
+</div>
+
+<table class="cal">
+  <tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>
+  {% for week in weeks %}
+  <tr>
+    {% for day in week %}
+    {% if day %}
+    {% set d = "%04d-%02d-%02d"|format(y, m, day) %}
+    {% set info = days.get(d) %}
+    <td class="cal-cell {{ 'has-data' if info }}" style="background: rgba(212,175,55,{{ (info.income / max_income * 0.55)|round(2) if info else 0 }});">
+      <a href="{{ url_for('admin.calendar_day', day=d) }}">
+        <span class="cal-day">{{ day }}</span>
+        {% if info %}
+        <span class="cal-amt">{{ info.income|rwf }}</span>
+        <span class="cal-n">{{ info.clients }} clients</span>
+        {% endif %}
+      </a>
+    </td>
+    {% else %}
+    <td class="cal-cell empty"></td>
+    {% endif %}
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
+
+<p><a class="btn-gold" href="{{ url_for('admin.calendar_export') }}?start={{ y }}-{{ '%02d'|format(m) }}-01{% if worker_id %}&worker_id={{ worker_id }}{% endif %}">⬇ Export transactions CSV</a></p>
+{% endblock %}
