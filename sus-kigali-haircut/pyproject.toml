@@ -1,2 +1,12 @@
+[project]
+name = "sus-kigali-haircut"
+version = "1.0.0"
+description = "SUS KIGALI HAIRCUT - website & barbershop management system"
+requires-python = ">=3.12"
+dependencies = [
+    "flask>=3.0",
+    "flask-sqlalchemy>=3.1",
+]
+
 [tool.vercel]
 entrypoint = "run:app"

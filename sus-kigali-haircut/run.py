@@ -8,6 +8,14 @@ from sus import create_app
 
 app = create_app()
 
+# Ensure the database exists and is seeded. This must run at import time
+# because serverless hosts (Vercel) import this module instead of running
+# it as a script; locally `python run.py` benefits from it too.
+with app.app_context():
+    from sus import db, seed_data
+    db.create_all()
+    seed_data()  # only seeds if database is empty
+
 if __name__ == "__main__":
     import sys
     with app.app_context():
@@ -17,7 +25,4 @@ if __name__ == "__main__":
             db.create_all()
             seed_data()
             print("Database reseeded with demo data.")
-        else:
-            db.create_all()
-            seed_data()  # only seeds if database is empty
     app.run(debug=True, host="127.0.0.1", port=5000)
