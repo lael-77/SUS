@@ -1,14 +1,17 @@
 {% extends "base_public.html" %}
+{% block title %}SUS KIGALI HAIRCUT — Barbershop, Hair &amp; Nails in Kigali{% endblock %}
 {% block content %}
+
+{# ------------------------------------------------------------------ HERO #}
 <section class="hero">
   <div class="wrap hero-inner">
     <p class="hero-eyebrow">Kigali's heritage grooming shop</p>
     <h1>Where Kigali comes<br>for a <em>sharp cut.</em></h1>
-    <p class="hero-sub">Classic barbership craft, female hair styling, and nail care —
+    <p class="hero-sub">Classic barbershop craft, female hair styling, and nail care —
       all under one roof, in the heart of Kigali.</p>
     <div class="hero-cta">
       <a class="btn btn-gold btn-lg" href="{{ url_for('public.booking') }}">Book Now</a>
-      <a class="btn btn-ghost btn-lg" href="{{ url_for('public.services') }}">See Services & Prices</a>
+      <a class="btn btn-ghost btn-lg" href="{{ url_for('public.services') }}">See Services &amp; Prices</a>
     </div>
     <div class="hero-strip">
       <span>💈 Barbering</span><span>💇 Female Hair</span><span>💅 Nails</span>
@@ -16,49 +19,153 @@
   </div>
 </section>
 
+{# ------------------------------------------------- ribbon / barber pole #}
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track">
+    <span>Fades</span><span>Beard Sculpting</span><span>Braiding</span><span>Manicure</span>
+    <span>Kids' Cuts</span><span>Hair Treatment</span><span>Line-Ups</span><span>Pedicure</span>
+    <span>Fades</span><span>Beard Sculpting</span><span>Braiding</span><span>Manicure</span>
+    <span>Kids' Cuts</span><span>Hair Treatment</span><span>Line-Ups</span><span>Pedicure</span>
+  </div>
+</div>
+
+{# --------------------------------------------------------- FEATURED MENU #}
 <section class="section wrap">
-  <h2 class="section-title">Featured Services</h2>
+  <div class="section-head" data-reveal>
+    <span class="eyebrow">The menu</span>
+    <h2>Featured Services</h2>
+    <p>Every price below is live from the shop's own register — what you see here is
+      exactly what you pay at the chair.</p>
+  </div>
   <div class="card-grid">
     {% for s in featured %}
-    <div class="card">
+    <div class="card" data-reveal data-reveal-delay="{{ loop.index0 % 3 + 1 }}">
       <h3>{{ s.name }}</h3>
       <p class="muted">{{ s.description }}</p>
       <p class="price">{{ s.price|rwf }} <small>· {{ s.duration_minutes }} min</small></p>
     </div>
     {% endfor %}
   </div>
-  <p class="center"><a class="btn btn-outline" href="{{ url_for('public.services') }}">Full Menu</a></p>
+  <p class="center" style="margin-top:var(--s9)">
+    <a class="btn btn-outline" href="{{ url_for('public.services') }}">Full Menu &amp; Prices</a>
+  </p>
 </section>
 
-<section class="section alt">
+{# ------------------------------------------------------------ THE CRAFT #}
+<section class="section section-alt">
+  <div class="wrap split">
+    <figure class="split-media" data-reveal>
+      <img src="{{ url_for('static', filename='img/chair.jpg') }}"
+           alt="A freshly prepared barber chair inside the SUS Kigali shop" loading="lazy">
+    </figure>
+    <div class="split-body" data-reveal data-reveal-delay="1">
+      <span class="pole-rule" aria-hidden="true"></span>
+      <h2>A heritage shop, not a trend.</h2>
+      <p>Precision, respect and a sharp result — for every single person who sits in our
+        chair. From the classic fade to protective braiding and immaculate nails, our
+        team treats each service as a craft, not a queue.</p>
+      <div class="tally">
+        <div><b>3</b><span>Disciplines</span></div>
+        <div><b>100%</b><span>Clean tools</span></div>
+        <div><b>6</b><span>Days a week</span></div>
+      </div>
+      <a class="btn btn-dark" href="{{ url_for('public.about') }}">Our Story</a>
+    </div>
+  </div>
+</section>
+
+{# --------------------------------------------------------------- GALLERY #}
+<section class="section wrap">
+  <div class="section-head center" data-reveal>
+    <span class="eyebrow">The shop</span>
+    <h2>Inside SUS Kigali</h2>
+  </div>
+  <div class="gallery" data-reveal>
+    <figure class="gallery-item wide tall">
+      <img src="{{ url_for('static', filename='img/fade.jpg') }}" alt="A barber finishing a skin fade" loading="lazy">
+      <figcaption>Skin fade</figcaption>
+    </figure>
+    <figure class="gallery-item">
+      <img src="{{ url_for('static', filename='img/tools.jpg') }}" alt="Barbering tools laid out on a counter" loading="lazy">
+      <figcaption>Tools of the trade</figcaption>
+    </figure>
+    <figure class="gallery-item">
+      <img src="{{ url_for('static', filename='img/hair.jpg') }}" alt="Long braided hair styling" loading="lazy">
+      <figcaption>Braiding</figcaption>
+    </figure>
+    <figure class="gallery-item">
+      <img src="{{ url_for('static', filename='img/nails.jpg') }}" alt="Manicure in progress" loading="lazy">
+      <figcaption>Nail care</figcaption>
+    </figure>
+    <figure class="gallery-item">
+      <img src="{{ url_for('static', filename='img/salon-bright.jpg') }}" alt="The bright interior of the salon" loading="lazy">
+      <figcaption>The floor</figcaption>
+    </figure>
+  </div>
+</section>
+
+{# --------------------------------------------------------------- PROCESS #}
+<section class="section section-dark">
   <div class="wrap">
-    <h2 class="section-title">Meet the Team</h2>
+    <div class="section-head" data-reveal>
+      <span class="eyebrow">Booking</span>
+      <h2>Four steps to the chair</h2>
+      <p>No phone tag, no double-booking. Our booking flow checks real availability as
+        you choose.</p>
+    </div>
+    <div class="process" data-reveal data-reveal-delay="1">
+      <div class="step"><h3>Choose your service</h3><p>Pick a haircut, a braiding style or a nail treatment — prices appear as you go.</p></div>
+      <div class="step"><h3>Choose your person</h3><p>Request a specific barber or stylist, or let us assign whoever is free.</p></div>
+      <div class="step"><h3>Pick date &amp; time</h3><p>Only genuinely open slots are shown, so your time is held the moment you confirm.</p></div>
+      <div class="step"><h3>Show up sharp</h3><p>You'll get a confirmation and a reminder. Walk-ins are welcome too.</p></div>
+    </div>
+    <p style="margin-top:var(--s9)">
+      <a class="btn btn-gold btn-lg" href="{{ url_for('public.booking') }}">Start a Booking</a>
+    </p>
+  </div>
+</section>
+
+{# ------------------------------------------------------------------ TEAM #}
+<section class="section section-alt">
+  <div class="wrap">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow">The people</span>
+      <h2>Meet the Team</h2>
+      <p>Barbers, hairstylists and nail technicians — all under one roof.</p>
+    </div>
     <div class="card-grid">
       {% for w in team %}
-      <div class="card person">
-        <div class="avatar">{{ w.full_name[0] }}</div>
+      <div class="card person" data-reveal data-reveal-delay="{{ loop.index0 % 3 + 1 }}">
+        <div class="avatar" aria-hidden="true">{{ w.full_name[0] }}</div>
         <h3>{{ w.full_name }}</h3>
         <p class="muted">{{ w.category }}{% if w.specialty %} — {{ w.specialty }}{% endif %}</p>
         <a class="btn btn-outline" href="{{ url_for('public.booking') }}">Book with {{ w.full_name.split()[0] }}</a>
       </div>
       {% endfor %}
     </div>
-    <p class="center"><a class="btn btn-outline" href="{{ url_for('public.team') }}">The Whole Team</a></p>
+    <p class="center" style="margin-top:var(--s9)">
+      <a class="btn btn-outline" href="{{ url_for('public.team') }}">The Whole Team</a>
+    </p>
   </div>
 </section>
 
+{# --------------------------------------------------------------- REVIEWS #}
 <section class="section wrap">
-  <h2 class="section-title">What Clients Say</h2>
+  <div class="section-head center" data-reveal>
+    <span class="eyebrow">Word of mouth</span>
+    <h2>What Clients Say</h2>
+  </div>
   <div class="card-grid">
     {% for r in reviews %}
-    <div class="card review">
-      <p class="stars">{{ '★' * r.rating }}</p>
+    <div class="card review" data-reveal data-reveal-delay="{{ loop.index0 % 3 + 1 }}">
+      <p class="stars" aria-label="{{ r.rating }} out of 5 stars">{{ '★' * r.rating }}</p>
       <p>"{{ r.comment }}"</p>
     </div>
     {% endfor %}
   </div>
 </section>
 
+{# ----------------------------------------------------------- HOURS / CTA #}
 <section class="hours-strip">
   <div class="wrap hours-inner">
     <div><strong>Opening Hours</strong><p>{{ shop.hours }}</p></div>

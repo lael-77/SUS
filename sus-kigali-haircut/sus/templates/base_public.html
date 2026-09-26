@@ -3,10 +3,27 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>{% block title %}SUS KIGALI HAIRCUT{% endblock %}</title>
+  <meta name="theme-color" content="#0b0b0c">
+  <title>{% block title %}SUS KIGALI HAIRCUT — Barbershop, Hair &amp; Nails in Kigali{% endblock %}</title>
+
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" sizes="any">
+  <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16.png') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
+  <link rel="manifest" href="{{ url_for('static', filename='site.webmanifest') }}">
+  <link rel="canonical" href="{{ request.url }}">
+
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{{ url_for('static', filename='fonts/fraunces-100_900-normal.woff2') }}">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{{ url_for('static', filename='fonts/manrope-200_800-normal.woff2') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/public.css') }}">
 </head>
 <body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
   <!-- Top contact strip: click-to-call & click-to-WhatsApp on every page (Section 3.3) -->
   <div class="topbar">
     <div class="wrap topbar-inner">
@@ -14,7 +31,7 @@
       <span>🕘 {{ shop.hours }}</span>
       <span class="topbar-actions">
         <a href="tel:{{ shop.phone }}">📞 Call</a>
-        <a href="https://wa.me/{{ shop.whatsapp }}" target="_blank">💬 WhatsApp</a>
+        <a href="https://wa.me/{{ shop.whatsapp }}" target="_blank" rel="noopener">💬 WhatsApp</a>
       </span>
     </div>
   </div>
@@ -22,29 +39,35 @@
   <header class="site-header">
     <div class="wrap header-inner">
       <a class="logo" href="{{ url_for('public.home') }}">
-        <span class="logo-mark">SUS</span>
-        <span class="logo-text">KIGALI HAIRCUT<small>EST. IN KIGALI</small></span>
+        <span class="logo-mark">
+          <img src="{{ url_for('static', filename='img/logo-pole.png') }}"
+               alt="" width="11" height="34" aria-hidden="true">
+        </span>
+        <span class="logo-text">Kigali Haircut<small>Est. in Kigali</small></span>
       </a>
-      <nav class="main-nav" id="nav">
-        <a href="{{ url_for('public.home') }}">Home</a>
-        <a href="{{ url_for('public.about') }}">About</a>
-        <a href="{{ url_for('public.services') }}">Services & Prices</a>
-        <a href="{{ url_for('public.team') }}">Our Team</a>
-        <a href="{{ url_for('public.contact') }}">Contact</a>
+      <nav class="main-nav" id="nav" aria-label="Main">
+        <a href="{{ url_for('public.home') }}"{% if request.endpoint == 'public.home' %} class="active"{% endif %}>Home</a>
+        <a href="{{ url_for('public.about') }}"{% if request.endpoint == 'public.about' %} class="active"{% endif %}>About</a>
+        <a href="{{ url_for('public.services') }}"{% if request.endpoint == 'public.services' %} class="active"{% endif %}>Services &amp; Prices</a>
+        <a href="{{ url_for('public.team') }}"{% if request.endpoint == 'public.team' %} class="active"{% endif %}>Our Team</a>
+        <a href="{{ url_for('public.contact') }}"{% if request.endpoint == 'public.contact' %} class="active"{% endif %}>Contact</a>
         <a class="btn btn-gold" href="{{ url_for('public.booking') }}">Book Now</a>
       </nav>
-      <button class="nav-toggle" onclick="document.getElementById('nav').classList.toggle('open')">☰</button>
+      <button class="nav-toggle" type="button" aria-label="Toggle navigation"
+              aria-controls="nav" aria-expanded="false"
+              onclick="var n=document.getElementById('nav');n.classList.toggle('open');this.setAttribute('aria-expanded',n.classList.contains('open'));">☰</button>
     </div>
   </header>
 
-  <main>
+  <main id="main">
     {% block content %}{% endblock %}
   </main>
 
   <footer class="site-footer">
     <div class="wrap footer-grid">
       <div>
-        <h3>{{ shop.name }}</h3>
+        <img class="footer-logo" src="{{ url_for('static', filename='img/logo.png') }}"
+             alt="{{ shop.name }}" width="155" height="46">
         <p>{{ shop.tagline }}</p>
         <p>📍 {{ shop.address }}</p>
       </div>
@@ -55,12 +78,21 @@
       </div>
       <div>
         <h3>Quick links</h3>
-        <p><a href="{{ url_for('public.services') }}">Services & Prices</a></p>
+        <p><a href="{{ url_for('public.services') }}">Services &amp; Prices</a></p>
         <p><a href="{{ url_for('public.booking') }}">Book an Appointment</a></p>
-        <p><a href="https://wa.me/{{ shop.whatsapp }}">Chat on WhatsApp</a></p>
+        <p><a href="https://wa.me/{{ shop.whatsapp }}" target="_blank" rel="noopener">Chat on WhatsApp</a></p>
       </div>
     </div>
-    <div class="footer-strip"><div class="wrap">© {{ 2026 }} {{ shop.name }} — Haircuts · Braiding · Nails · Kigali, Rwanda</div></div>
+    <div class="footer-strip">
+      <div class="wrap">© {{ 2026 }} {{ shop.name }} — Haircuts · Braiding · Nails · Kigali, Rwanda</div>
+    </div>
   </footer>
+
+  <div class="sticky-cta">
+    <a class="btn btn-gold" href="{{ url_for('public.booking') }}">Book Now</a>
+    <a class="btn btn-ghost" href="tel:{{ shop.phone }}">📞 Call</a>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/site.js') }}" defer></script>
 </body>
 </html>

@@ -12,48 +12,68 @@
 </div>
 
 <h2>My upcoming schedule</h2>
-<table>
-  <tr><th>Date</th><th>Time</th><th>Client</th><th>Service</th><th>Status</th></tr>
-  {% for a in upcoming %}
-  <tr>
-    <td>{{ a.date }}</td>
-    <td>{{ a.time }}</td>
-    <td>{{ a.client.name }}<br><small class="muted">{{ a.client.phone }}</small></td>
-    <td>{{ a.service.name }}</td>
-    <td><span class="badge {{ a.status }}">{{ a.status }}</span></td>
-  </tr>
-  {% else %}<tr><td colspan="5">No upcoming bookings.</td></tr>{% endfor %}
-</table>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th scope="col">Date</th><th scope="col">Time</th><th scope="col">Client</th><th scope="col">Service</th><th scope="col">Status</th></tr></thead>
+    <tbody>
+    {% for a in upcoming %}
+    <tr>
+      <td>{{ a.date }}</td>
+      <td><strong>{{ a.time }}</strong></td>
+      <td>{{ a.client.name }}<br><small>{{ a.client.phone }}</small></td>
+      <td>{{ a.service.name }}</td>
+      <td><span class="badge {{ a.status }}">{{ a.status }}</span></td>
+    </tr>
+    {% else %}<tr><td colspan="5">No upcoming bookings.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
 
 <h2>My services this month</h2>
-<table>
-  <tr><th>Date</th><th>Time</th><th>Client</th><th>Amount</th><th>My commission</th><th>My tip</th><th>Payment</th></tr>
-  {% for t in month_tx %}
-  <tr>
-    <td>{{ t.date }}</td>
-    <td>{{ t.time }}</td>
-    <td>{{ t.client.name if t.client else '—' }}</td>
-    <td>{{ t.amount|rwf }}</td>
-    <td>{{ t.commission_amount|rwf }}</td>
-    <td>{{ t.tip|rwf }}</td>
-    <td>{{ t.payment_method }}</td>
-  </tr>
-  {% else %}<tr><td colspan="7">No services recorded yet this month.</td></tr>{% endfor %}
-</table>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th scope="col">Date</th><th scope="col">Time</th><th scope="col">Client</th>
+          <th scope="col">Amount</th><th scope="col">My commission</th><th scope="col">My tip</th>
+          <th scope="col">Payment</th></tr>
+    </thead>
+    <tbody>
+    {% for t in month_tx %}
+    <tr>
+      <td>{{ t.date }}</td>
+      <td>{{ t.time }}</td>
+      <td>{{ t.client.name if t.client else '—' }}</td>
+      <td>{{ t.amount|rwf }}</td>
+      <td><strong>{{ t.commission_amount|rwf }}</strong></td>
+      <td>{{ t.tip|rwf }}</td>
+      <td>{{ t.payment_method }}</td>
+    </tr>
+    {% else %}<tr><td colspan="7">No services recorded yet this month.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
 
 <h2>My payslips</h2>
-<table>
-  <tr><th>Period</th><th>Clients</th><th>Commission + tips</th><th>Bonus</th><th>Deductions</th><th>Net paid</th><th>Paid on</th></tr>
-  {% for p in payslips %}
-  <tr>
-    <td>{{ p.period_start }} → {{ p.period_end }}</td>
-    <td>{{ p.total_clients }}</td>
-    <td>{{ p.commission_earned|rwf }}</td>
-    <td>{{ p.bonus|rwf }}</td>
-    <td>{{ p.deductions|rwf }}</td>
-    <td><strong>{{ p.net_pay|rwf }}</strong></td>
-    <td>{{ p.paid_date }}</td>
-  </tr>
-  {% else %}<tr><td colspan="7">No payslips yet.</td></tr>{% endfor %}
-</table>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th scope="col">Period</th><th scope="col">Clients</th><th scope="col">Commission + tips</th>
+          <th scope="col">Bonus</th><th scope="col">Deductions</th><th scope="col">Net paid</th>
+          <th scope="col">Paid on</th></tr>
+    </thead>
+    <tbody>
+    {% for p in payslips %}
+    <tr>
+      <td>{{ p.period_start }} → {{ p.period_end }}</td>
+      <td>{{ p.total_clients }}</td>
+      <td>{{ p.commission_earned|rwf }}</td>
+      <td>{{ p.bonus|rwf }}</td>
+      <td>{{ p.deductions|rwf }}</td>
+      <td><strong>{{ p.net_pay|rwf }}</strong></td>
+      <td>{{ p.paid_date }}</td>
+    </tr>
+    {% else %}<tr><td colspan="7">No payslips yet.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

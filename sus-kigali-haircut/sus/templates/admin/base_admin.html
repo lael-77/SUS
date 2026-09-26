@@ -3,32 +3,51 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0b0b0c">
+  <meta name="robots" content="noindex, nofollow">
   <title>{% block title %}Admin — SUS KIGALI HAIRCUT{% endblock %}</title>
+
+  <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='img/apple-touch-icon.png') }}">
+
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{{ url_for('static', filename='fonts/fraunces-100_900-normal.woff2') }}">
+  <link rel="preload" as="font" type="font/woff2" crossorigin
+        href="{{ url_for('static', filename='fonts/manrope-200_800-normal.woff2') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/fonts.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/theme.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
 </head>
 <body class="admin-body">
+  {% set role = session.get('role') %}
+  {% set ep = request.endpoint or '' %}
+
   <aside class="sidebar" id="sidebar">
-    <div class="sidebar-brand">SUS <span>ADMIN</span></div>
-    <nav>
-      {% set role = session.get('role') %}
+    <div class="sidebar-brand">
+      <img src="{{ url_for('static', filename='img/logo-pole.png') }}"
+           alt="" width="9" height="28" aria-hidden="true">
+      SUS <span>Admin</span>
+    </div>
+    <nav aria-label="Dashboard">
       {% if role == 'super_admin' or role == 'manager' %}
-      <a href="{{ url_for('admin.overview') }}">📊 Overview</a>
-      <a href="{{ url_for('admin.calendar_view') }}">🗓 Calendar & Trends</a>
-      <a href="{{ url_for('admin.transactions') }}">💰 Record Transaction</a>
-      <a href="{{ url_for('admin.appointments') }}">📅 Appointments</a>
-      <a href="{{ url_for('admin.workers') }}">✂️ Workers</a>
-      <a href="{{ url_for('admin.services') }}">🧾 Services & Prices</a>
-      <a href="{{ url_for('admin.clients') }}">👥 Clients</a>
-      <a href="{{ url_for('admin.inventory') }}">📦 Inventory</a>
-      <a href="{{ url_for('admin.expenses') }}">🧮 Expenses</a>
-      <a href="{{ url_for('admin.reports') }}">📈 Reports</a>
+      <a href="{{ url_for('admin.overview') }}"{% if ep == 'admin.overview' %} class="active"{% endif %}>📊 Overview</a>
+      <a href="{{ url_for('admin.calendar_view') }}"{% if ep.startswith('admin.calendar') %} class="active"{% endif %}>🗓 Calendar &amp; Trends</a>
+      <a href="{{ url_for('admin.transactions') }}"{% if ep.startswith('admin.transaction') %} class="active"{% endif %}>💰 Record Transaction</a>
+      <a href="{{ url_for('admin.appointments') }}"{% if ep.startswith('admin.appointment') %} class="active"{% endif %}>📅 Appointments</a>
+      <a href="{{ url_for('admin.workers') }}"{% if ep.startswith('admin.worker') %} class="active"{% endif %}>✂️ Workers</a>
+      <a href="{{ url_for('admin.services') }}"{% if ep.startswith('admin.service') %} class="active"{% endif %}>🧾 Services &amp; Prices</a>
+      <a href="{{ url_for('admin.clients') }}"{% if ep.startswith('admin.client') %} class="active"{% endif %}>👥 Clients</a>
+      <a href="{{ url_for('admin.inventory') }}"{% if ep.startswith('admin.inventory') %} class="active"{% endif %}>📦 Inventory</a>
+      <a href="{{ url_for('admin.expenses') }}"{% if ep.startswith('admin.expense') %} class="active"{% endif %}>🧮 Expenses</a>
+      <a href="{{ url_for('admin.reports') }}"{% if ep == 'admin.reports' %} class="active"{% endif %}>📈 Reports</a>
       {% endif %}
       {% if role == 'super_admin' %}
-      <a href="{{ url_for('admin.payroll') }}">🏦 Payroll</a>
-      <a href="{{ url_for('admin.settings') }}">⚙️ Settings</a>
+      <a href="{{ url_for('admin.payroll') }}"{% if ep.startswith('admin.payroll') %} class="active"{% endif %}>🏦 Payroll</a>
+      <a href="{{ url_for('admin.settings') }}"{% if ep.startswith('admin.settings') %} class="active"{% endif %}>⚙️ Settings</a>
       {% endif %}
       {% if role == 'worker' %}
-      <a href="{{ url_for('admin.my') }}">📆 My Schedule</a>
+      <a href="{{ url_for('admin.my') }}"{% if ep == 'admin.my' %} class="active"{% endif %}>📆 My Schedule</a>
       {% endif %}
     </nav>
     <a class="sidebar-bottom" href="{{ url_for('public.home') }}">← Public website</a>
@@ -36,7 +55,8 @@
 
   <div class="admin-main">
     <header class="admin-topbar">
-      <button class="menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <button class="menu-btn" type="button" aria-label="Toggle menu" aria-controls="sidebar"
+              onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
       <span class="shop-name">{{ shop.name if shop else 'SUS KIGALI HAIRCUT' }}</span>
       <span class="spacer"></span>
       <span class="user-chip">{{ current_user_name }}</span>

@@ -2,7 +2,7 @@
 {% block title %}Payroll — SUS Admin{% endblock %}
 {% block content %}
 <h1>Payroll Management</h1>
-<p class="muted">Automatic salary calculation by pay type. Review, adjust bonus/deductions, then Approve & Pay.</p>
+<p class="muted">Automatic salary calculation by pay type. Review, adjust bonus/deductions, then Approve &amp; Pay.</p>
 
 <form method="get" class="inline-form panel">
   <label>From <input type="date" name="start" value="{{ start }}"></label>
@@ -13,44 +13,63 @@
 <form method="post" action="{{ url_for('admin.payroll_approve') }}">
   <input type="hidden" name="start" value="{{ start }}">
   <input type="hidden" name="end" value="{{ end }}">
-  <table>
-    <tr><th></th><th>Worker</th><th>Pay type</th><th>Clients</th><th>Revenue</th><th>Commission</th><th>Tips</th><th>Bonus</th><th>Deductions</th><th>Net pay</th><th>Paid?</th></tr>
-    {% for r in rows %}
-    <tr>
-      <td><input type="checkbox" name="skip_{{ r.worker.id }}" {% if r.existing %}checked disabled{% endif %}></td>
-      <td><strong>{{ r.worker.full_name }}</strong><br><small class="muted">{{ r.worker.category }}</small></td>
-      <td>{{ r.worker.pay_type }}</td>
-      <td>{{ r.clients }}</td>
-      <td>{{ r.revenue|rwf }}</td>
-      <td>{{ r.commission|rwf }}</td>
-      <td>{{ r.tips|rwf }}</td>
-      <td><input type="number" name="bonus_{{ r.worker.id }}" value="{{ r.bonus }}" class="num"></td>
-      <td><input type="number" name="ded_{{ r.worker.id }}" value="{{ r.deductions }}" class="num"></td>
-      <td><strong>{{ r.net|rwf }}</strong></td>
-      <td>{% if r.existing %}<span class="badge confirmed">PAID</span>{% else %}<span class="badge pending">draft</span>{% endif %}</td>
-    </tr>
-    {% else %}<tr><td colspan="11">No workers registered.</td></tr>{% endfor %}
-  </table>
-  <p><small class="muted">Uncheck a worker to skip them. Already-paid periods are locked (checkbox disabled).</small></p>
-  <button class="btn-gold" type="submit">Approve & Pay selected</button>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th scope="col">Skip</th><th scope="col">Worker</th><th scope="col">Pay type</th>
+            <th scope="col">Clients</th><th scope="col">Revenue</th><th scope="col">Commission</th>
+            <th scope="col">Tips</th><th scope="col">Bonus</th><th scope="col">Deductions</th>
+            <th scope="col">Net pay</th><th scope="col">Paid?</th></tr>
+      </thead>
+      <tbody>
+      {% for r in rows %}
+      <tr>
+        <td><input type="checkbox" name="skip_{{ r.worker.id }}" {% if r.existing %}checked disabled{% endif %}
+                   title="Tick to skip this worker for the period"></td>
+        <td><strong>{{ r.worker.full_name }}</strong><br><small>{{ r.worker.category }}</small></td>
+        <td>{{ r.worker.pay_type }}</td>
+        <td>{{ r.clients }}</td>
+        <td>{{ r.revenue|rwf }}</td>
+        <td>{{ r.commission|rwf }}</td>
+        <td>{{ r.tips|rwf }}</td>
+        <td><input type="number" name="bonus_{{ r.worker.id }}" value="{{ r.bonus }}" class="num"></td>
+        <td><input type="number" name="ded_{{ r.worker.id }}" value="{{ r.deductions }}" class="num"></td>
+        <td><strong>{{ r.net|rwf }}</strong></td>
+        <td>{% if r.existing %}<span class="badge confirmed">PAID</span>{% else %}<span class="badge pending">draft</span>{% endif %}</td>
+      </tr>
+      {% else %}<tr><td colspan="11">No workers registered.</td></tr>{% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <p><small>Tick a worker's box to skip them for this period. Already-paid periods are locked (box disabled).</small></p>
+  <button class="btn-gold btn-lg" type="submit">Approve &amp; pay every unticked worker</button>
 </form>
 
 <h2>Payment history</h2>
-<table>
-  <tr><th>Payslip #</th><th>Worker</th><th>Period</th><th>Clients</th><th>Revenue</th><th>Commission + tips</th><th>Bonus</th><th>Deductions</th><th>Net paid</th><th>Paid on</th></tr>
-  {% for p in past %}
-  <tr>
-    <td>{{ p.id }}</td>
-    <td>{{ p.worker.full_name }}</td>
-    <td>{{ p.period_start }} → {{ p.period_end }}</td>
-    <td>{{ p.total_clients }}</td>
-    <td>{{ p.gross_revenue|rwf }}</td>
-    <td>{{ p.commission_earned|rwf }}</td>
-    <td>{{ p.bonus|rwf }}</td>
-    <td>{{ p.deductions|rwf }}</td>
-    <td><strong>{{ p.net_pay|rwf }}</strong></td>
-    <td>{{ p.paid_date }}</td>
-  </tr>
-  {% else %}<tr><td colspan="10">No payslips issued yet.</td></tr>{% endfor %}
-</table>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th scope="col">Payslip #</th><th scope="col">Worker</th><th scope="col">Period</th>
+          <th scope="col">Clients</th><th scope="col">Revenue</th><th scope="col">Commission + tips</th>
+          <th scope="col">Bonus</th><th scope="col">Deductions</th><th scope="col">Net paid</th>
+          <th scope="col">Paid on</th></tr>
+    </thead>
+    <tbody>
+    {% for p in past %}
+    <tr>
+      <td>{{ p.id }}</td>
+      <td>{{ p.worker.full_name }}</td>
+      <td>{{ p.period_start }} → {{ p.period_end }}</td>
+      <td>{{ p.total_clients }}</td>
+      <td>{{ p.gross_revenue|rwf }}</td>
+      <td>{{ p.commission_earned|rwf }}</td>
+      <td>{{ p.bonus|rwf }}</td>
+      <td>{{ p.deductions|rwf }}</td>
+      <td><strong>{{ p.net_pay|rwf }}</strong></td>
+      <td>{{ p.paid_date }}</td>
+    </tr>
+    {% else %}<tr><td colspan="10">No payslips issued yet.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

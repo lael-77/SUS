@@ -1,41 +1,52 @@
 {% extends "admin/base_admin.html" %}
 {% block title %}Calendar — SUS Admin{% endblock %}
 {% block content %}
+{% set last_day = (weeks | map('max') | max) %}
 <h1>Income Calendar</h1>
 <p class="muted">Daily income, commission and client counts at a glance. Select a worker to turn this into their salary tracker.</p>
 
 <form method="get" class="inline-form panel">
-  <select name="worker_id" onchange="this.form.submit()">
+  <select name="worker_id" onchange="this.form.submit()" aria-label="Filter by worker">
     <option value="">— All workers —</option>
     {% for w in workers %}
     <option value="{{ w.id }}" {% if w.id == worker_id %}selected{% endif %}>{{ w.full_name }}</option>
     {% endfor %}
   </select>
-  <a href="?y={{ y }}&m={{ m - 1 if m > 1 else 12 }}{% if worker_id %}&worker_id={{ worker_id }}{% endif %}">← Prev</a>
+  <a href="?y={{ y - 1 if m == 1 else y }}&m={{ m - 1 if m > 1 else 12 }}{% if worker_id %}&worker_id={{ worker_id }}{% endif %}">← Prev</a>
   <strong>{{ month_name }} {{ y }}</strong>
-  <a href="?y={{ y }}&m={{ m + 1 if m < 12 else 1 }}{% if worker_id %}&worker_id={{ worker_id }}{% endif %}">Next →</a>
+  <a href="?y={{ y + 1 if m == 12 else y }}&m={{ m + 1 if m < 12 else 1 }}{% if worker_id %}&worker_id={{ worker_id }}{% endif %}">Next →</a>
 </form>
 
 <div class="stat-grid">
   <div class="stat"><span class="stat-label">Income — {{ month_name }}</span><span class="stat-value">{{ month_income|rwf }}</span></div>
   <div class="stat"><span class="stat-label">Commission + tips</span><span class="stat-value">{{ month_commission|rwf }}</span></div>
   <div class="stat"><span class="stat-label">Clients</span><span class="stat-value">{{ month_clients }}</span></div>
+  <div class="stat"><span class="stat-label">Busiest day</span>
+    <span class="stat-value small">
+      {% set best = namespace(d='—', v=0) %}
+      {% for k, v in days.items() %}{% if v.income > best.v %}{% set best.d = k %}{% set best.v = v.income %}{% endif %}{% endfor %}
+      {{ best.d }}{% if best.v %}<small>{{ best.v|rwf }}</small>{% endif %}
+    </span></div>
 </div>
 
 <table class="cal">
-  <tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th>Sat</th></tr>
+  <thead>
+    <tr><th scope="col">Sun</th><th scope="col">Mon</th><th scope="col">Tue</th><th scope="col">Wed</th>
+        <th scope="col">Thu</th><th scope="col">Fri</th><th scope="col">Sat</th></tr>
+  </thead>
+  <tbody>
   {% for week in weeks %}
   <tr>
     {% for day in week %}
     {% if day %}
     {% set d = "%04d-%02d-%02d"|format(y, m, day) %}
     {% set info = days.get(d) %}
-    <td class="cal-cell {{ 'has-data' if info }}" style="background: rgba(212,175,55,{{ (info.income / max_income * 0.55)|round(2) if info else 0 }});">
+    <td class="cal-cell {{ 'has-data' if info }}" style="--heat: {{ (info.income / max_income)|round(2) if info else 0 }};">
       <a href="{{ url_for('admin.calendar_day', day=d) }}">
         <span class="cal-day">{{ day }}</span>
         {% if info %}
         <span class="cal-amt">{{ info.income|rwf }}</span>
-        <span class="cal-n">{{ info.clients }} clients</span>
+        <span class="cal-n">{{ info.clients }} client{{ '' if info.clients == 1 else 's' }}</span>
         {% endif %}
       </a>
     </td>
@@ -45,7 +56,14 @@
     {% endfor %}
   </tr>
   {% endfor %}
+  </tbody>
 </table>
 
-<p><a class="btn-gold" href="{{ url_for('admin.calendar_export') }}?start={{ y }}-{{ '%02d'|format(m) }}-01{% if worker_id %}&worker_id={{ worker_id }}{% endif %}">⬇ Export transactions CSV</a></p>
+<p class="legend">
+  <span class="dot income"></span> Shading = relative daily income —
+  <span style="opacity:.25">lighter</span> is quieter, <strong>darker</strong> is busier.
+  Click any day for the full breakdown.
+</p>
+
+<p><a class="btn-gold" href="{{ url_for('admin.calendar_export') }}?start={{ y }}-{{ '%02d'|format(m) }}-01&end={{ y }}-{{ '%02d'|format(m) }}-{{ '%02d'|format(last_day) }}{% if worker_id %}&worker_id={{ worker_id }}{% endif %}">⬇ Export {{ month_name }} CSV</a></p>
 {% endblock %}

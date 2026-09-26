@@ -6,7 +6,7 @@
 
 <div class="toolbar">
   <form method="get" class="inline-form">
-    <select name="category" onchange="this.form.submit()">
+    <select name="category" onchange="this.form.submit()" aria-label="Filter by category">
       <option value="">All categories</option>
       {% for c in categories %}
       <option value="{{ c }}" {{ 'selected' if category == c }}>{{ c }}</option>
@@ -34,7 +34,8 @@
         <option value="hybrid">Hybrid (base + commission)</option>
       </select></label>
     <label>Base salary (RWF, fixed/hybrid only)<input type="number" name="base_salary" id="wf-salary" value="0"></label>
-    <label>Commission rate % (blank = shop default {{ default_rate }}%)<input type="number" step="0.5" name="commission_rate" id="wf-rate"></label>
+    <label>Commission rate % <small class="muted">(blank = shop default {{ default_rate }}%)</small>
+      <input type="number" step="0.5" name="commission_rate" id="wf-rate"></label>
     <label>Status
       <select name="status"><option value="active">Active</option><option value="inactive">Inactive</option></select></label>
     <label>Login email (optional)<input type="email" name="email" id="wf-email"></label>
@@ -43,39 +44,50 @@
   <button class="btn-gold" type="submit">Save worker</button>
 </form>
 
-<table>
-  <tr><th>Worker</th><th>Category</th><th>Specialty</th><th>Rate</th><th>Pay type</th>
-      <th>This month: clients</th><th>Revenue</th><th>Commission earned</th><th>Status</th><th></th></tr>
-  {% for w in workers %}
-  <tr>
-    <td><strong>{{ w.full_name }}</strong><br><small>{{ w.phone or '' }}</small></td>
-    <td>{{ w.category }}</td>
-    <td>{{ w.specialty or '—' }}</td>
-    <td>{{ w.rate }}%</td>
-    <td>{{ w.pay_type }}</td>
-    <td>{{ perf[w.id].clients }}</td>
-    <td>{{ perf[w.id].revenue|rwf }}</td>
-    <td><strong>{{ perf[w.id].commission|rwf }}</strong></td>
-    <td><span class="badge {{ 'confirmed' if w.status == 'active' else 'cancelled' }}">{{ w.status }}</span></td>
-    <td class="actions">
-      <button class="btn-sm" onclick='editWorker({{ {
-        "id": w.id, "name": w.full_name, "phone": w.phone or "", "category": w.category,
-        "specialty": w.specialty or "", "pay_type": w.pay_type, "base_salary": w.base_salary,
-        "rate": w.commission_rate, "email": (w.user.email if w.user else ""), "status": w.status }|tojson }})'>Edit</button>
-      <form method="post" action="{{ url_for('admin.worker_toggle', wid=w.id) }}" class="inline">
-        <button class="btn-sm">{{ 'Deactivate' if w.status == 'active' else 'Reactivate' }}</button>
-      </form>
-    </td>
-  </tr>
-  {% endfor %}
-</table>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th scope="col">Worker</th><th scope="col">Category</th><th scope="col">Specialty</th>
+          <th scope="col">Rate</th><th scope="col">Pay type</th>
+          <th scope="col">Clients (mo)</th><th scope="col">Revenue</th><th scope="col">Commission earned</th>
+          <th scope="col">Status</th><th scope="col"><span class="sr-only">Actions</span></th></tr>
+    </thead>
+    <tbody>
+    {% for w in workers %}
+    <tr>
+      <td><strong>{{ w.full_name }}</strong>{% if w.phone %}<br><small>{{ w.phone }}</small>{% endif %}</td>
+      <td>{{ w.category }}</td>
+      <td>{{ w.specialty or '—' }}</td>
+      <td>{{ w.rate }}%</td>
+      <td>{{ w.pay_type }}</td>
+      <td>{{ perf[w.id].clients }}</td>
+      <td>{{ perf[w.id].revenue|rwf }}</td>
+      <td><strong>{{ perf[w.id].commission|rwf }}</strong></td>
+      <td><span class="badge {{ 'confirmed' if w.status == 'active' else 'cancelled' }}">{{ w.status }}</span></td>
+      <td class="actions">
+        <button class="btn-sm" onclick='editWorker({{ {
+          "id": w.id, "name": w.full_name, "phone": w.phone or "", "category": w.category,
+          "specialty": w.specialty or "", "pay_type": w.pay_type, "base_salary": w.base_salary,
+          "rate": w.commission_rate, "email": (w.user.email if w.user else ""), "status": w.status }|tojson }})'>Edit</button>
+        <form method="post" action="{{ url_for('admin.worker_toggle', wid=w.id) }}" class="inline">
+          <button class="btn-sm">{{ 'Deactivate' if w.status == 'active' else 'Reactivate' }}</button>
+        </form>
+      </td>
+    </tr>
+    {% else %}<tr><td colspan="10">No workers registered yet.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
 
 <script>
 function toggleForm(id) {
-  document.getElementById(id).classList.toggle('hidden');
-  if (id === 'worker-form' && document.getElementById(id).classList.contains('hidden') === false) {
+  var el = document.getElementById(id);
+  var opening = el.classList.contains('hidden');
+  el.classList.toggle('hidden');
+  // Opening the form fresh means "add new", so clear any previously edited id.
+  if (id === 'worker-form' && opening) {
     document.getElementById('wf-id').value = '';
-    document.getElementById('wf-title');
+    document.getElementById('worker-form-title').innerText = 'Add worker';
   }
 }
 function editWorker(w) {

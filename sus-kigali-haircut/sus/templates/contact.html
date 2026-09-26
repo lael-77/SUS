@@ -1,29 +1,48 @@
 {% extends "base_public.html" %}
-{% block title %}Contact & Location — SUS KIGALI HAIRCUT{% endblock %}
+{% block title %}Contact &amp; Location — SUS KIGALI HAIRCUT{% endblock %}
 {% block content %}
 <section class="page-head">
   <div class="wrap">
-    <h1>Contact & Location</h1>
+    <h1>Contact &amp; Location</h1>
     <p>Walk-ins welcome — but booking ahead guarantees your slot.</p>
   </div>
 </section>
+
 <section class="section wrap">
   <div class="contact-grid">
-    <div class="contact-card card">
+    <div class="contact-card card" data-reveal>
       <h3>📞 Call us</h3>
       <p><a class="big-link" href="tel:{{ shop.phone }}">{{ shop.phone }}</a></p>
       <h3>💬 WhatsApp</h3>
-      <p><a class="btn btn-gold" href="https://wa.me/{{ shop.whatsapp }}" target="_blank">Message us on WhatsApp</a></p>
+      <p><a class="btn btn-gold" href="https://wa.me/{{ shop.whatsapp }}" target="_blank" rel="noopener">Message us on WhatsApp</a></p>
       <h3>🕘 Opening hours</h3>
       <p>{{ shop.hours }}</p>
     </div>
-    <div class="map-card card">
+    <div class="map-card card" data-reveal data-reveal-delay="1">
       <h3>📍 Find us</h3>
       <p>{{ shop.address }}</p>
       <div class="map-placeholder">
         <p>Google Maps embed goes here<br><small>(KN 4 Ave, Kigali City Centre)</small></p>
       </div>
     </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="wrap">
+    <div class="section-head center" data-reveal>
+      <span class="eyebrow">Before you come</span>
+      <h2>Good to know</h2>
+    </div>
+    <div class="value-grid" data-reveal data-reveal-delay="1">
+      <div class="value-card"><strong>Walk-ins</strong><p>Welcome any time we're open — but weekends fill up fast, so book ahead if your time matters.</p></div>
+      <div class="value-card"><strong>Payment</strong><p>Cash, MTN MoMo, Airtel Money and card are all accepted at the counter.</p></div>
+      <div class="value-card"><strong>Kids</strong><p>Children are welcome. Tell us when you book so we allow a little extra time.</p></div>
+      <div class="value-card"><strong>Parking</strong><p>Street parking is available along the avenue right outside the shop.</p></div>
+    </div>
+    <p class="center" style="margin-top:var(--s9)">
+      <a class="btn btn-gold btn-lg" href="{{ url_for('public.booking') }}">Book an Appointment</a>
+    </p>
   </div>
 </section>
 {% endblock %}

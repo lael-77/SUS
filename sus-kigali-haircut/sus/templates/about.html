@@ -7,9 +7,10 @@
     <p>Confident, disciplined, craft-focused — a Kigali original.</p>
   </div>
 </section>
+
 <section class="section wrap">
   <div class="about-grid">
-    <div>
+    <div data-reveal>
       <h2>A heritage shop, not a trend.</h2>
       <p>SUS Kigali Haircut was built on a simple belief: every person who sits in our
         chair deserves precision, respect, and a sharp result. From the classic
@@ -20,11 +21,52 @@
         our grandfathers trusted.</p>
       <a class="btn btn-gold" href="{{ url_for('public.booking') }}">Book Your Visit</a>
     </div>
-    <div class="about-facts">
+    <div class="about-facts" data-reveal data-reveal-delay="1">
       <div><strong>Our mission</strong><p>Make every client leave sharper than they arrived.</p></div>
       <div><strong>Our team</strong><p>Barbers, hairstylists and nail technicians, all under one roof.</p></div>
       <div><strong>Our promise</strong><p>Clean tools, fair prices, no shortcuts.</p></div>
     </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="wrap split">
+    <figure class="split-media" data-reveal>
+      <img src="{{ url_for('static', filename='img/styling.jpg') }}"
+           alt="A stylist working on a client's hair in the salon" loading="lazy">
+    </figure>
+    <div class="split-body" data-reveal data-reveal-delay="1">
+      <span class="pole-rule" aria-hidden="true"></span>
+      <h2>Three crafts under one roof.</h2>
+      <p><strong>Barbering.</strong> Fades, tapers, line-ups, beard sculpting and
+        traditional razor work — the discipline the shop was founded on.</p>
+      <p><strong>Female hair.</strong> Cutting, styling, protective braiding and
+        treatments, done with the same attention to structure and finish.</p>
+      <p><strong>Nail care.</strong> Manicure and pedicure with sterilised tools, so
+        hands and feet match the haircut.</p>
+      <a class="btn btn-dark" href="{{ url_for('public.team') }}">Meet the Team</a>
+    </div>
+  </div>
+</section>
+
+<section class="section wrap">
+  <div class="section-head center" data-reveal>
+    <span class="eyebrow">How we work</span>
+    <h2>The SUS standard</h2>
+  </div>
+  <div class="process" data-reveal data-reveal-delay="1">
+    <div class="step"><h3>Consult first</h3><p>We ask what you want and tell you what will actually suit your hair and routine.</p></div>
+    <div class="step"><h3>Clean tools, always</h3><p>Blades, combs and nail tools are sterilised between every client — no exceptions.</p></div>
+    <div class="step"><h3>One honest price</h3><p>The price on our menu is the price you pay. No surprise add-ons at the chair.</p></div>
+    <div class="step"><h3>Keep it sharp</h3><p>We tell you exactly when to come back and how to maintain the look at home.</p></div>
+  </div>
+</section>
+
+<section class="hours-strip">
+  <div class="wrap hours-inner">
+    <div><strong>Visit us</strong><p>{{ shop.address }}</p></div>
+    <div><strong>Opening hours</strong><p>{{ shop.hours }}</p></div>
+    <div><a class="btn btn-gold" href="{{ url_for('public.booking') }}">Book Now</a></div>
   </div>
 </section>
 {% endblock %}

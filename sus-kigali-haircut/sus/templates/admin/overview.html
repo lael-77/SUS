@@ -9,14 +9,15 @@
   <div class="stat"><span class="stat-label">Clients served today</span><span class="stat-value">{{ clients_today }}</span></div>
   <div class="stat"><span class="stat-label">Appointments today</span><span class="stat-value">{{ appts_today }}</span></div>
   <div class="stat"><span class="stat-label">Top performer today</span>
-    <span class="stat-value small">{{ top_today[0] if top_today else '—' }}<br>
-    <small>{{ top_today[1]|rwf if top_today else '' }}</small></span></div>
+    <span class="stat-value small">{{ top_today[0] if top_today else '—' }}
+      {% if top_today %}<small>{{ top_today[1]|rwf }}</small>{% endif %}</span></div>
 </div>
 
 <div class="stat-grid">
   <div class="stat"><span class="stat-label">Month revenue</span><span class="stat-value">{{ month_revenue|rwf }}</span></div>
   <div class="stat"><span class="stat-label">Month commission out</span><span class="stat-value">{{ month_commission|rwf }}</span></div>
-  <div class="stat"><span class="stat-label">Month profit (rev − comm − exp)</span><span class="stat-value">{{ month_profit|rwf }}</span></div>
+  <div class="stat"><span class="stat-label">Month profit</span><span class="stat-value">{{ month_profit|rwf }}
+    <small>revenue − commission − expenses</small></span></div>
   <div class="stat"><span class="stat-label">Low-stock alerts</span><span class="stat-value">{{ low_stock|length }}</span></div>
 </div>
 
@@ -37,23 +38,31 @@
 <div class="two-pane">
   <div class="pane">
     <h2>Upcoming appointments</h2>
-    <table>
-      <tr><th>When</th><th>Client</th><th>Worker</th><th>Service</th><th>Status</th></tr>
-      {% for a in upcoming %}
-      <tr><td>{{ a.date }} {{ a.time }}</td><td>{{ a.client.name }}</td>
-          <td>{{ a.worker.full_name }}</td><td>{{ a.service.name }}</td>
-          <td><span class="badge {{ a.status }}">{{ a.status }}</span></td></tr>
-      {% else %}<tr><td colspan="5">No upcoming appointments.</td></tr>{% endfor %}
-    </table>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">When</th><th scope="col">Client</th><th scope="col">Worker</th><th scope="col">Service</th><th scope="col">Status</th></tr></thead>
+        <tbody>
+        {% for a in upcoming %}
+        <tr><td>{{ a.date }}<br><small>{{ a.time }}</small></td><td>{{ a.client.name }}</td>
+            <td>{{ a.worker.full_name }}</td><td>{{ a.service.name }}</td>
+            <td><span class="badge {{ a.status }}">{{ a.status }}</span></td></tr>
+        {% else %}<tr><td colspan="5">No upcoming appointments.</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
   <div class="pane">
     <h2>Low-stock alerts</h2>
-    <table>
-      <tr><th>Item</th><th>Stock</th><th>Reorder at</th></tr>
-      {% for i in low_stock %}
-      <tr><td>{{ i.item_name }}</td><td>{{ i.quantity }} {{ i.unit }}</td><td>{{ i.reorder_level }}</td></tr>
-      {% else %}<tr><td colspan="3">All stock levels healthy. ✅</td></tr>{% endfor %}
-    </table>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th scope="col">Item</th><th scope="col">Stock</th><th scope="col">Reorder at</th></tr></thead>
+        <tbody>
+        {% for i in low_stock %}
+        <tr><td>{{ i.item_name }}</td><td>{{ i.quantity }} {{ i.unit }}</td><td>{{ i.reorder_level }}</td></tr>
+        {% else %}<tr><td colspan="3">All stock levels healthy. ✅</td></tr>{% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 {% endblock %}

@@ -1,7 +1,7 @@
 {% extends "admin/base_admin.html" %}
 {% block title %}Reports — SUS Admin{% endblock %}
 {% block content %}
-<h1>Reports & Analytics</h1>
+<h1>Reports &amp; Analytics</h1>
 <p class="muted">Month-to-date performance. Data-driven decisions — who to promote, what to price up, when to schedule extra staff.</p>
 
 <div class="stat-grid">
@@ -10,44 +10,60 @@
 </div>
 
 <h2>Top services</h2>
-<table>
-  <tr><th>#</th><th>Service</th><th>Revenue</th><th>Share</th></tr>
-  {% for name, amt in top_services %}
-  <tr>
-    <td>{{ loop.index }}</td>
-    <td><strong>{{ name }}</strong></td>
-    <td>{{ amt|rwf }}</td>
-    <td>
-      {% set pct = (amt / month_revenue * 100)|round(1) if month_revenue else 0 %}
-      <div class="bar"><span style="width: {{ pct }}%"></span> {{ pct }}%</div>
-    </td>
-  </tr>
-  {% else %}<tr><td colspan="4">No completed services yet this month.</td></tr>{% endfor %}
-</table>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th scope="col">#</th><th scope="col">Service</th><th scope="col">Revenue</th><th scope="col">Share</th></tr></thead>
+    <tbody>
+    {% for name, amt in top_services %}
+    <tr>
+      <td>{{ loop.index }}</td>
+      <td><strong>{{ name }}</strong></td>
+      <td>{{ amt|rwf }}</td>
+      <td>
+        {% set pct = (amt / month_revenue * 100)|round(1) if month_revenue else 0 %}
+        <div class="bar"><span style="width: {{ pct }}%"></span> {{ pct }}%</div>
+      </td>
+    </tr>
+    {% else %}<tr><td colspan="4">No completed services yet this month.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
 
 <h2>Revenue by worker</h2>
-<table>
-  <tr><th>Worker</th><th>Revenue</th><th>Share</th></tr>
-  {% for name, amt in by_worker %}
-  <tr><td>{{ name }}</td><td>{{ amt|rwf }}</td>
-    <td>{% set pct = (amt / month_revenue * 100)|round(1) if month_revenue else 0 %}
-      <div class="bar"><span style="width: {{ pct }}%"></span> {{ pct }}%</div></td></tr>
-  {% else %}<tr><td colspan="3">—</td></tr>{% endfor %}
-</table>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th scope="col">Worker</th><th scope="col">Revenue</th><th scope="col">Share</th></tr></thead>
+    <tbody>
+    {% for name, amt in by_worker %}
+    <tr><td>{{ name }}</td><td><strong>{{ amt|rwf }}</strong></td>
+      <td>{% set pct = (amt / month_revenue * 100)|round(1) if month_revenue else 0 %}
+        <div class="bar"><span style="width: {{ pct }}%"></span> {{ pct }}%</div></td></tr>
+    {% else %}<tr><td colspan="3">—</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
 
 <h2>Revenue by category</h2>
-<table>
-  <tr><th>Category</th><th>Revenue</th></tr>
-  {% for name, amt in by_category %}
-  <tr><td>{{ name }}</td><td>{{ amt|rwf }}</td></tr>
-  {% else %}<tr><td colspan="2">—</td></tr>{% endfor %}
-</table>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th scope="col">Category</th><th scope="col">Revenue</th></tr></thead>
+    <tbody>
+    {% for name, amt in by_category %}
+    <tr><td>{{ name }}</td><td><strong>{{ amt|rwf }}</strong></td></tr>
+    {% else %}<tr><td colspan="2">—</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
 
 <h2>Busiest hours</h2>
-<table>
-  <tr><th>Hour</th><th>Revenue</th></tr>
-  {% for h, amt in busiest %}
-  <tr><td>{{ h }}:00</td><td>{{ amt|rwf }}</td></tr>
-  {% else %}<tr><td colspan="2">—</td></tr>{% endfor %}
-</table>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th scope="col">Hour</th><th scope="col">Revenue</th></tr></thead>
+    <tbody>
+    {% for h, amt in busiest %}
+    <tr><td>{{ h }}:00</td><td><strong>{{ amt|rwf }}</strong></td></tr>
+    {% else %}<tr><td colspan="2">—</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
 {% endblock %}

@@ -4,7 +4,10 @@
 <h1>Inventory Management</h1>
 <p class="muted">Track shop products so supplies never run out mid-week. Items at or below reorder level are highlighted.</p>
 
-<div class="toolbar"><button class="btn-gold" onclick="toggleForm('inv-form')">＋ Add item</button></div>
+<div class="toolbar">
+  <span class="muted">Saving an item with an existing name re-stocks it — set the new quantity in the form.</span>
+  <button class="btn-gold" onclick="toggleForm('inv-form')">＋ Add item</button>
+</div>
 
 <form method="post" action="{{ url_for('admin.inventory_save') }}" id="inv-form" class="panel hidden">
   <h2>Add / restock item</h2>
@@ -20,20 +23,28 @@
   <button class="btn-gold" type="submit">Save item</button>
 </form>
 
-<table>
-  <tr><th>Item</th><th>Category</th><th>Stock</th><th>Reorder at</th><th>Unit cost</th><th>Stock value</th><th>Status</th></tr>
-  {% for i in items %}
-  <tr class="{{ 'row-alert' if i.low_stock }}">
-    <td><strong>{{ i.item_name }}</strong></td>
-    <td>{{ i.category or '—' }}</td>
-    <td>{{ i.quantity }} {{ i.unit }}</td>
-    <td>{{ i.reorder_level }}</td>
-    <td>{{ i.unit_cost|rwf }}</td>
-    <td>{{ (i.quantity * i.unit_cost)|rwf }}</td>
-    <td><span class="badge {{ 'no_show' if i.low_stock else 'confirmed' }}">{{ '⚠ LOW' if i.low_stock else 'OK' }}</span></td>
-  </tr>
-  {% endfor %}
-</table>
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th scope="col">Item</th><th scope="col">Category</th><th scope="col">Stock</th>
+          <th scope="col">Reorder at</th><th scope="col">Unit cost</th><th scope="col">Stock value</th>
+          <th scope="col">Status</th></tr>
+    </thead>
+    <tbody>
+    {% for i in items %}
+    <tr class="{{ 'row-alert' if i.low_stock }}">
+      <td><strong>{{ i.item_name }}</strong></td>
+      <td>{{ i.category or '—' }}</td>
+      <td>{{ i.quantity }} {{ i.unit }}</td>
+      <td>{{ i.reorder_level }}</td>
+      <td>{{ i.unit_cost|rwf }}</td>
+      <td>{{ (i.quantity * i.unit_cost)|rwf }}</td>
+      <td><span class="badge {{ 'no_show' if i.low_stock else 'confirmed' }}">{{ '⚠ LOW' if i.low_stock else 'OK' }}</span></td>
+    </tr>
+    {% else %}<tr><td colspan="7">No inventory items yet.</td></tr>{% endfor %}
+    </tbody>
+  </table>
+</div>
 
 <script>
 function toggleForm(id) { document.getElementById(id).classList.toggle('hidden'); }
