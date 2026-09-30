@@ -1,5 +1,5 @@
 {% extends "base_public.html" %}
-{% block title %}Services &amp; Prices — SUS KIGALI HAIRCUT{% endblock %}
+{% block title %}Services &amp; Prices — SUS Kigali Haircut{% endblock %}
 {% block content %}
 <section class="page-head">
   <div class="wrap">
@@ -25,6 +25,16 @@
     </div>
     {% endfor %}
   </div>
+  {% else %}
+  <div class="empty-state" data-reveal>
+    <h3>The menu is being updated</h3>
+    <p>We are putting this season's prices online right now. Call or message the shop
+      and we'll quote you in seconds — walk-ins are always welcome.</p>
+    <div class="btn-row">
+      <a class="btn btn-gold" href="tel:{{ shop.phone_tel }}">📞 {{ shop.phone }}</a>
+      <a class="btn btn-outline" href="https://wa.me/{{ shop.whatsapp }}" target="_blank" rel="noopener">💬 WhatsApp us</a>
+    </div>
+  </div>
   {% endfor %}
 
   <p class="center" style="margin-top:var(--s10)">
@@ -43,7 +53,8 @@
         are always current. A discount or a special can be applied at the chair.</p>
       <div class="btn-row">
         <a class="btn btn-dark" href="{{ url_for('public.booking') }}">Book Now</a>
-        <a class="btn btn-outline" href="tel:{{ shop.phone }}">📞 Ask a Question</a>
+        <a class="btn btn-outline" href="tel:{{ shop.phone_tel }}">📞 Call {{ shop.phone }}</a>
+        <a class="btn btn-outline" href="https://wa.me/{{ shop.whatsapp }}" target="_blank" rel="noopener">💬 WhatsApp us</a>
       </div>
     </div>
     <figure class="split-media" data-reveal data-reveal-delay="1">

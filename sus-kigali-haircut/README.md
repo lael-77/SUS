@@ -22,32 +22,54 @@ built from scratch per the project documentation:
 ```bash
 cd sus-kigali-haircut
 python -m pip install -r requirements.txt
-python run.py            # creates the DB, seeds demo data, serves on http://127.0.0.1:5000
+python run.py            # create/upgrade the DB, bootstrap it, serve on http://127.0.0.1:5000
 ```
 
-Default accounts (change them after first login under **Settings**):
+### Commands
 
-| Role         | Login (email)             | Password    |
-|--------------|---------------------------|-------------|
-| Super admin  | `owner@suskigali.rw`      | `admin123`  |
-| Manager      | `manager@suskigali.rw`    | `manager123`|
-| Worker       | `eric@suskigali.rw`       | `eric123`   |
-| Worker       | `divine@suskigali.rw`     | `divine123` |
+| Command                | What it does                                                                  |
+|------------------------|-------------------------------------------------------------------------------|
+| `python run.py`        | Create/upgrade the database, then serve on `http://127.0.0.1:5000`             |
+| `python run.py init`   | Only create/upgrade the database and the owner login, then exit                |
+| `python run.py clean`  | **Drop every table** and re-create an empty shop (settings + owner only)       |
+| `python run.py reseed` | Rebuild the database with the illustrative demo dataset                        |
+| `python smoke_test.py` | End-to-end check of every route plus the commission maths (own database)        |
+
+`clean` and `reseed` are destructive by design — that is what "wipe the seed
+data" means. Both now finish and exit instead of leaving a server running behind
+them.
+
+### Accounts
+
+The bootstrap always creates the owner login. The other three only exist when you
+run `reseed` — they are demo staff.
+
+| Role         | Login (email)             | Password    | Created by  |
+|--------------|---------------------------|-------------|-------------|
+| Super admin  | `owner@suskigali.rw`      | `admin123`  | bootstrap   |
+| Manager      | `manager@suskigali.rw`    | `manager123`| `reseed`    |
+| Worker       | `eric@suskigali.rw`       | `eric123`   | `reseed`    |
+| Worker       | `divine@suskigali.rw`     | `divine123` | `reseed`    |
+
+Change the owner password and the shop details under **Admin › Settings** before
+going live.
 
 ## Structure
 
 ```
-run.py                  entry point (init DB, seed, run)
-config.py               app configuration
+run.py                  entry point — `run.py [init|clean|reseed]`
+config.py               app configuration + the shop's contact details
+smoke_test.py           end-to-end test of every route and the commission maths
 sus/
   __init__.py           app factory, blueprint registration
   models.py             ORM models (workers, services, transactions, ...)
+  schema.py             additive ALTER TABLE upgrades for existing databases
   auth.py               login/logout, role-based access
   public.py             public website + /api/book
   admin.py              owner/super-admin dashboard + worker portal
   api.py                JSON endpoints (workers, availability)
-  commission.py         commission engine (Section 4 payroll rules)
-  seed.py               demo data
+  commission.py         commission engine — per-service rates (Section 5)
+  seed.py               bootstrap (settings + owner) and the demo dataset
   templates/            Jinja2 templates (public + admin)
   static/css            theme.css (design tokens) → public.css / admin.css
   static/js             site.js (public polish) + booking.js (booking flow)
@@ -87,20 +109,124 @@ static/js/site.js       sticky-header shadow, mobile-nav close, scroll reveals
 
 Assets are documented in [`CREDITS.md`](CREDITS.md) — brand artwork, font licences
 and the Unsplash photo IDs.
-smoke_test.py           end-to-end test of every route (run with app up)
 ```
 
 ## Business rules (from documentation)
 
-- Commission is computed per transaction from the service price and the
-  worker's commission rate; payroll summarizes per worker per month.
+- **Commission is set per service.** Every service carries its own worker
+  percentage, because the shop does not make the same margin on a 10,000 RWF
+  haircut as on a 20,000 RWF braiding job. For each sale the engine looks at, in
+  order:
+
+  1. the **service's own percentage** — `Admin › Services & Prices`
+  2. otherwise the **worker's own rate** — `Admin › Workers` (e.g. an apprentice)
+  3. otherwise the **shop default** — `Admin › Settings`
+
+  A visit with several services accrues each line at its own percentage and the
+  lines are summed. A discount is spread across the lines in proportion to their
+  price. Tips are tracked separately and go 100 % to the worker. Each
+  `transaction_item` stores the percentage and the amount it was paid at, so an
+  old receipt stays correct after a rate is changed.
+- Payroll summarizes commission, tips, bonuses and deductions per worker per period.
 - Income calendar color-codes each day's total revenue.
 - Every price on the public site comes from the live database — nothing is
   hardcoded twice.
 - Optional restriction: workers may only be booked for services in their own
   category (toggle in Settings).
 
+## Contact details and branding
+
+The shop name, phone number and WhatsApp number live in **one place**:
+`config.py`.
+
+```python
+SHOP_NAME      = "SUS Kigali Haircut"
+SHOP_PHONE     = "+250 785 998 860"    # shown to people
+SHOP_PHONE_TEL = "+250785998860"       # what href="tel:..." uses
+SHOP_WHATSAPP  = "250795410781"        # digits only, for https://wa.me/...
+```
+
+Those values are written into the `settings` table on first run and used as the
+fallback everywhere — the top contact strip, the header wordmark, the footer, the
+sticky mobile bar and every `tel:` / `wa.me` link. Nothing is hardcoded inside a
+template, so editing `config.py` and running `python run.py init` re-brands the
+whole site. Once a row exists in the database, **Admin › Settings** wins.
+
+## Database
+
+### Local development — SQLite
+
+Out of the box the app uses `sus_kigali.db`, a SQLite file next to `config.py`.
+Nothing to install, nothing to configure.
+
+### Production / Vercel — Postgres
+
+SQLite will not survive on Vercel: the filesystem is read-only apart from `/tmp`,
+and `/tmp` is wiped between invocations, so the data would disappear. Use a
+hosted Postgres — Vercel Postgres, Neon, Supabase and Railway all work.
+
+1. **Provision the database.** In the Vercel dashboard open the project →
+   *Storage* → *Create Database* → *Postgres*, or attach a Neon database through
+   the *Neon* integration. Either way you end up with a connection string.
+
+2. **Expose the connection string.** Vercel Postgres sets `POSTGRES_URL`
+   automatically; the app also accepts `DATABASE_URL`. Add it to the project's
+   environment variables if your provider uses another name:
+
+   ```
+   DATABASE_URL=postgresql://user:password@host/dbname?sslmode=require
+   ```
+
+   Both `postgres://` and `postgresql://` are accepted —
+   `config.database_uri()` rewrites them to the `postgresql+psycopg://` form
+   SQLAlchemy 2.x requires.
+
+3. **Install the driver.** It is already in `requirements.txt`:
+
+   ```bash
+   python -m pip install -r requirements.txt   # installs psycopg[binary]
+   ```
+
+4. **Create the schema.** The app does it on the first request. `run.py` calls
+   `db.create_all()`, then `sus/schema.py::ensure_schema()` adds any column a
+   newer version introduced (so an existing database upgrades in place without
+   Alembic), then `sus/seed.py::seed_data()` writes the settings rows and the
+   owner login. Nothing else is needed.
+
+5. **Seed real data.** Sign in at `/admin/login` as `owner@suskigali.rw` /
+   `admin123`, change the password, then add your services, workers and clients
+   from the dashboard. Do **not** run `python run.py reseed` against production —
+   that loads demo data. `reseed` and `clean` only make sense locally.
+
+6. **Keep the session secret private.** Set `SECRET_KEY` to a long random string
+   in the environment variables; the built-in default is for local development
+   only:
+
+   ```bash
+   python -c "import secrets; print(secrets.token_urlsafe(48))"
+   ```
+
+7. **Migrating an existing SQLite file to Postgres.** Take a maintenance window
+   and back up `sus_kigali.db` first, then:
+
+   ```bash
+   # point the app at Postgres and let it build the schema + bootstrap rows
+   $env:DATABASE_URL = "postgresql://user:password@host/dbname?sslmode=require"
+   python run.py init
+   ```
+
+   The schema is identical on both engines, so any row-copy tool works:
+   `pandas.DataFrame.to_sql`, SQLAlchemy's `Table.insert()`, or a short script
+   that reads with `sqlite3` and writes through the app's own `db.session`.
+   Insert parents before children — `users` → `workers` / `clients` /
+   `transactions` → `transaction_items`, and `workers` / `clients` before
+   `appointments`, `payroll`, `reviews` and `attendance` — so the foreign keys
+   resolve. Verify the dashboard, then set `DATABASE_URL` in Vercel and redeploy.
+
 ## Notes
 
-- Data lives in `sus_kigali.db` (auto-created). Delete it to reset to seed data.
-- Amounts are in RWF (Rwandan Francs).
+- Amounts are in RWF (Rwandan Francs) and are stored as whole numbers.
+- Deleting `sus_kigali.db` is the quickest local reset; `python run.py clean`
+  does the same thing without touching the file by hand.
+- `python run.py clean` keeps only the settings rows and the owner login, so the
+  site is immediately usable after a wipe — just add your services and staff.

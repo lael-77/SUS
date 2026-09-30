@@ -86,7 +86,20 @@ class Service(db.Model):
     price = db.Column(db.Integer, nullable=False)  # RWF
     duration_minutes = db.Column(db.Integer, nullable=False, default=30)
     category = db.Column(db.String(40), nullable=False, default="Barber")
+    # Percentage of this service's price that goes to the worker who performs
+    # it. Services are NOT all worth the same to the shop, so this is set per
+    # service (e.g. a plain haircut 50%, a braiding job 40%, a manicure 30%).
+    # None -> fall back to the worker's own rate, then to the shop default.
+    commission_rate = db.Column(db.Float)
     active = db.Column(db.Boolean, nullable=False, default=True)
+
+    @property
+    def rate(self):
+        """The service's own commission percentage, or None if it inherits."""
+        return self.commission_rate
+
+    def __repr__(self):
+        return f"<Service {self.name} ({self.price} RWF)>"
 
 
 class Client(db.Model):
@@ -127,6 +140,10 @@ class TransactionItem(db.Model):
     service_id = db.Column(db.Integer, db.ForeignKey("services.id"))
     service_name = db.Column(db.String(120), nullable=False)
     price = db.Column(db.Integer, nullable=False)  # RWF charged for this line
+    # Snapshot of the rule used at the time of sale, so old receipts stay
+    # correct even after a service's percentage is changed later.
+    commission_rate = db.Column(db.Float)                      # percent applied
+    commission_amount = db.Column(db.Integer, nullable=False, default=0)
 
 
 class Transaction(db.Model):

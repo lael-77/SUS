@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0b0b0c">
   <meta name="robots" content="noindex, nofollow">
-  <title>{% block title %}Admin — SUS KIGALI HAIRCUT{% endblock %}</title>
+  <title>{% block title %}Admin — SUS Kigali Haircut{% endblock %}</title>
 
   <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='img/favicon-32.png') }}">
@@ -27,7 +27,10 @@
     <div class="sidebar-brand">
       <img src="{{ url_for('static', filename='img/logo-pole.png') }}"
            alt="" width="9" height="28" aria-hidden="true">
-      SUS <span>Admin</span>
+      <div class="brand-lockup">
+        <strong><b>SUS</b> Kigali Haircut</strong>
+        <span>Admin</span>
+      </div>
     </div>
     <nav aria-label="Dashboard">
       {% if role == 'super_admin' or role == 'manager' %}
@@ -57,8 +60,10 @@
     <header class="admin-topbar">
       <button class="menu-btn" type="button" aria-label="Toggle menu" aria-controls="sidebar"
               onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
-      <span class="shop-name">{{ shop.name if shop else 'SUS KIGALI HAIRCUT' }}</span>
+      <span class="shop-name">{{ shop.name }}</span>
       <span class="spacer"></span>
+      <a class="topbar-contact" href="tel:{{ shop.phone_tel }}" title="Call the shop">📞 {{ shop.phone }}</a>
+      <a class="topbar-contact" href="https://wa.me/{{ shop.whatsapp }}" target="_blank" rel="noopener" title="WhatsApp the shop">💬<span class="topbar-contact-word">&nbsp;WhatsApp</span></a>
       <span class="user-chip">{{ current_user_name }}</span>
       <a class="btn-logout" href="{{ url_for('admin.logout') }}">Log out</a>
     </header>

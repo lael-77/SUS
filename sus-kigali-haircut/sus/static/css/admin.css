@@ -71,6 +71,17 @@
   color: var(--ink); background: var(--gold);
   padding: 3px 8px; border-radius: var(--r-xs);
 }
+/* Wordmark on two rows: the shop name, then the role chip underneath. */
+.sidebar-brand .brand-lockup {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 6px;
+  min-width: 0;
+}
+.sidebar-brand .brand-lockup strong {
+  font-family: var(--font-display); font-size: var(--fs-md); font-weight: 600;
+  letter-spacing: .02em; line-height: 1.15; text-transform: uppercase;
+  color: var(--on-dark);
+}
+.sidebar-brand .brand-lockup strong b { font-weight: 900; color: var(--gold); }
 .sidebar nav { flex: 1; padding: var(--s4) var(--s3); display: grid; gap: 2px; }
 .sidebar nav a {
   display: flex; align-items: center; gap: var(--s4);
@@ -102,6 +113,12 @@
   font-family: var(--font-display); font-size: var(--fs-md); font-weight: 600;
   letter-spacing: .02em; text-transform: uppercase; color: var(--ink);
 }
+.topbar-contact {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: var(--fs-sm); font-weight: 600; color: var(--text-2);
+  white-space: nowrap;
+}
+.topbar-contact:hover { color: var(--gold-700, var(--gold)); text-decoration: underline; }
 .user-chip {
   display: inline-flex; align-items: center; gap: var(--s2);
   padding: 6px 14px; border-radius: var(--r-full);
@@ -142,6 +159,12 @@
 @media (max-width: 560px) {
   .shop-name { display: none; }
   .user-chip { max-width: 38vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+}
+@media (max-width: 860px) {
+  .topbar-contact .topbar-contact-word { display: none; }
+}
+@media (max-width: 720px) {
+  .topbar-contact { display: none; }
 }
 
 

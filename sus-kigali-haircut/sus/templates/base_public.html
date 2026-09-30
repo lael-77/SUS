@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#0b0b0c">
-  <title>{% block title %}SUS KIGALI HAIRCUT — Barbershop, Hair &amp; Nails in Kigali{% endblock %}</title>
+  <title>{% block title %}SUS Kigali Haircut — Barbershop, Hair &amp; Nails in Kigali{% endblock %}</title>
 
   <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}" sizes="any">
   <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='img/favicon-16.png') }}">
@@ -30,8 +30,8 @@
       <span>📍 {{ shop.address }}</span>
       <span>🕘 {{ shop.hours }}</span>
       <span class="topbar-actions">
-        <a href="tel:{{ shop.phone }}">📞 Call</a>
-        <a href="https://wa.me/{{ shop.whatsapp }}" target="_blank" rel="noopener">💬 WhatsApp</a>
+        <a href="tel:{{ shop.phone_tel }}">📞 <span class="call-word">Call</span> <span class="call-num">{{ shop.phone }}</span></a>
+        <a href="https://wa.me/{{ shop.whatsapp }}" target="_blank" rel="noopener">💬 <span class="call-word">WhatsApp</span> <span class="call-num">{{ shop.whatsapp_display }}</span></a>
       </span>
     </div>
   </div>
@@ -43,7 +43,7 @@
           <img src="{{ url_for('static', filename='img/logo-pole.png') }}"
                alt="" width="11" height="34" aria-hidden="true">
         </span>
-        <span class="logo-text">Kigali Haircut<small>Est. in Kigali</small></span>
+        <span class="logo-text"><span class="logo-name"><b>SUS</b> Kigali Haircut</span><small>Est. in Kigali</small></span>
       </a>
       <nav class="main-nav" id="nav" aria-label="Main">
         <a href="{{ url_for('public.home') }}"{% if request.endpoint == 'public.home' %} class="active"{% endif %}>Home</a>
@@ -74,7 +74,7 @@
       <div>
         <h3>Hours</h3>
         <p>{{ shop.hours }}</p>
-        <p>📞 <a href="tel:{{ shop.phone }}">{{ shop.phone }}</a></p>
+        <p>📞 <a href="tel:{{ shop.phone_tel }}">{{ shop.phone }}</a></p>
       </div>
       <div>
         <h3>Quick links</h3>
@@ -90,7 +90,8 @@
 
   <div class="sticky-cta">
     <a class="btn btn-gold" href="{{ url_for('public.booking') }}">Book Now</a>
-    <a class="btn btn-ghost" href="tel:{{ shop.phone }}">📞 Call</a>
+    <a class="btn btn-ghost" href="tel:{{ shop.phone_tel }}">📞 Call</a>
+    <a class="btn btn-ghost" href="https://wa.me/{{ shop.whatsapp }}" target="_blank" rel="noopener">💬 WhatsApp</a>
   </div>
 
   <script src="{{ url_for('static', filename='js/site.js') }}" defer></script>

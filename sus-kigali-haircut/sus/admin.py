@@ -26,6 +26,19 @@ def _setting(key, default):
     return Setting.get(key, default)
 
 
+def _pct(value):
+    """Parse a percentage form field. Blank -> None (meaning 'inherit')."""
+    text = (value or "").strip().replace("%", "")
+    if not text:
+        return None
+    try:
+        pct = float(text)
+    except ValueError:
+        return None
+    # Guard against accidental nonsense such as 500 % or a negative share.
+    return max(0.0, min(100.0, pct))
+
+
 # ---------------------------------------------------------------- login/logout
 @admin_bp.route("/login", methods=["GET", "POST"])
 def login():
@@ -174,7 +187,8 @@ def services():
     for s in Service.query.order_by(Service.category, Service.name).all():
         grouped[s.category].append(s)
     return render_template("admin/services.html", grouped=grouped,
-                           categories=["Barber", "Hairstylist", "Nail Technician", "Other"])
+                           categories=["Barber", "Hairstylist", "Nail Technician", "Other"],
+                           default_rate=_setting("default_commission_rate", 20))
 
 
 @admin_bp.route("/services/save", methods=["POST"])
@@ -188,6 +202,9 @@ def service_save():
     s.price = int(f.get("price") or 0)
     s.duration_minutes = int(f.get("duration_minutes") or 30)
     s.category = f.get("category", "Barber")
+    # Blank means "no idea yet" — fall back to the worker's rate, then the
+    # shop default. See sus/commission.py.
+    s.commission_rate = _pct(f.get("commission_rate"))
     s.active = f.get("active") == "on"
     db.session.add(s)
     db.session.commit()
@@ -218,7 +235,8 @@ def transactions():
     workers = Worker.query.filter_by(status="active").order_by(Worker.full_name).all()
     services = Service.query.filter_by(active=True).order_by(Service.category, Service.name).all()
     return render_template("admin/transactions.html", txs=txs, workers=workers,
-                           services=services, date=d, worker_id=wid)
+                           services=services, date=d, worker_id=wid,
+                           default_rate=_setting("default_commission_rate", 20))
 
 
 @admin_bp.route("/transactions/record", methods=["POST"])

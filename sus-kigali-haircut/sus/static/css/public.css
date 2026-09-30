@@ -1,5 +1,5 @@
 /* ==========================================================================
-   SUS KIGALI HAIRCUT — PUBLIC WEBSITE
+   SUS Kigali Haircut — PUBLIC WEBSITE
    "Pole & Blade": a heritage barbershop editorial layout.
    Tokens live in theme.css; this file styles the public pages only.
    ========================================================================== */
@@ -23,6 +23,13 @@
 @media (max-width: 720px) {
   .topbar-inner { justify-content: center; gap: var(--s3) var(--s5); padding-block: var(--s2); }
   .topbar-actions { margin-left: 0; }
+  /* Keep the links one thumb away but drop the digits on very small screens. */
+  .call-num { display: none; }
+}
+@media (min-width: 721px) and (max-width: 1080px) {
+  /* Address and hours take priority on tablets; the full numbers still read
+     here via the footer, the services page and the contact page. */
+  .topbar .call-word { display: none; }
 }
 
 
@@ -61,6 +68,9 @@
   line-height: 1.05; letter-spacing: .02em; text-transform: uppercase;
   color: var(--ink); display: flex; flex-direction: column;
 }
+/* "SUS" carries the brand weight; the rest of the wordmark stays ink. */
+.logo-name { white-space: nowrap; }
+.logo-name b { font-weight: 900; color: var(--gold-ink); letter-spacing: .01em; }
 .logo-text small {
   font-family: var(--font-body); font-size: .58rem; font-weight: 700;
   letter-spacing: var(--tr-wide); text-transform: uppercase; color: var(--gold-ink);
@@ -646,3 +656,31 @@
 }
 @media (max-width: 900px) { .booking-layout { grid-template-columns: 1fr; } }
 
+
+/* --------------------------------------------------------------------------
+   EMPTY STATE — what the site says before the owner has entered the menu.
+   A blank grid reads as broken; this reads as "we're open, talk to us."
+   -------------------------------------------------------------------------- */
+.empty-state {
+  grid-column: 1 / -1;
+  padding: var(--s9) var(--s6);
+  text-align: center;
+  background: var(--paper-2);
+  border: 1px dashed var(--line-2);
+  border-radius: var(--r-lg);
+}
+.empty-state h3 {
+  font-size: var(--fs-lg);
+  margin-bottom: var(--s3);
+}
+.empty-state p {
+  max-width: 52ch;
+  margin-inline: auto;
+  color: var(--text-soft);
+  font-size: var(--fs-sm);
+}
+.empty-state .btn-row {
+  justify-content: center;
+  margin-top: var(--s6);
+}
+.empty-state.compact { padding: var(--s7) var(--s5); }

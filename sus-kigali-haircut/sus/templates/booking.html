@@ -1,5 +1,5 @@
 {% extends "base_public.html" %}
-{% block title %}Book an Appointment — SUS KIGALI HAIRCUT{% endblock %}
+{% block title %}Book an Appointment — SUS Kigali Haircut{% endblock %}
 {% block content %}
 <section class="page-head">
   <div class="wrap">
@@ -21,6 +21,17 @@
             {% endfor %}
           </select>
         </label>
+        {% if not services %}
+        <div class="empty-state compact">
+          <h3>Online booking opens shortly</h3>
+          <p>The service menu is still being loaded, so this form can't take bookings yet.
+            Call or message the shop and we'll put you in the book by hand.</p>
+          <div class="btn-row">
+            <a class="btn btn-gold" href="tel:{{ shop.phone_tel }}">📞 {{ shop.phone }}</a>
+            <a class="btn btn-outline" href="https://wa.me/{{ shop.whatsapp }}" target="_blank" rel="noopener">💬 WhatsApp us</a>
+          </div>
+        </div>
+        {% endif %}
 
         <label>2. Choose your person
           <select id="worker" required>
@@ -48,7 +59,7 @@
           </label>
         </div>
 
-        <button type="submit" class="btn btn-gold btn-lg">Confirm Booking</button>
+        <button type="submit" class="btn btn-gold btn-lg"{% if not services %} disabled{% endif %}>Confirm Booking</button>
         <p id="booking-msg" class="booking-msg" role="status" aria-live="polite"></p>
       </form>
     </div>
@@ -62,9 +73,10 @@
         <li>Free to change — just call us</li>
       </ul>
       <h3>Prefer to talk?</h3>
-      <p><a class="big-link" href="tel:{{ shop.phone }}">{{ shop.phone }}</a></p>
+      <p><a class="big-link" href="tel:{{ shop.phone_tel }}">{{ shop.phone }}</a></p>
       <p class="muted small">{{ shop.hours }}</p>
       <p><a class="btn btn-outline" href="https://wa.me/{{ shop.whatsapp }}" target="_blank" rel="noopener">💬 WhatsApp us</a></p>
+      <p class="muted small">{{ shop.whatsapp_display }}</p>
     </aside>
 
   </div>

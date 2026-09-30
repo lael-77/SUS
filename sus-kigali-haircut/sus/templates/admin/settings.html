@@ -22,6 +22,8 @@
     <div class="form-grid">
       <label>Default commission rate (%)
         <input type="number" name="default_commission_rate" step="0.5" value="{{ settings.default_commission_rate }}"></label>
+      <p class="muted small span2">Used only as the last resort. A service's own percentage
+        (Admin &rsaquo; Services &amp; Prices) wins, then the worker's own rate (Admin &rsaquo; Workers).</p>
       <label>Commission on discounted price?
         <select name="commission_on_discounted">
           <option value="1" {% if settings.commission_on_discounted == '1' %}selected{% endif %}>Yes — pay commission on amount actually collected</option>

@@ -3,27 +3,67 @@
 Prices shown here always come from the live service list in the database,
 never hardcoded twice (Section 3.3).
 """
+import re
+
 from flask import Blueprint, render_template, request, jsonify
 
+from config import SHOP_NAME, SHOP_PHONE, SHOP_PHONE_TEL, SHOP_WHATSAPP
 from .models import (db, Setting, Service, Worker, Appointment, Client, Review)
 
 public_bp = Blueprint("public", __name__)
 
 
+def tel_href(value):
+    """Turn however the owner typed a number into a dial-safe ``tel:`` target.
+
+    "+250 785 998 860" -> "+250785998860",  "078 599 8860" -> "0785998860".
+    Without this, spaces and brackets end up percent-encoded in the link.
+    """
+    raw = re.sub(r"[^\d+]", "", value or "")
+    if raw.startswith("+"):
+        raw = "+" + raw[1:].replace("+", "")
+    else:
+        raw = raw.replace("+", "")
+    return raw or SHOP_PHONE_TEL
+
+
+def whatsapp_display(digits):
+    """``250795410781`` -> ``+250 795 410 781`` so the number is readable."""
+    if len(digits) == 12 and digits.startswith("250"):
+        return f"+250 {digits[3:6]} {digits[6:9]} {digits[9:]}"
+    return "+" + digits
+
+
 def shop():
+    """Shop identity used by *every* template, admin screens included.
+
+    Values come from the ``settings`` table; anything missing falls back to
+    ``config.py`` so the brand, phone and WhatsApp links never render blank —
+    even on a freshly wiped database, and even if the table is not there yet.
+    """
+    try:
+        name = Setting.get("shop_name") or SHOP_NAME
+        phone = Setting.get("phone") or SHOP_PHONE
+        whatsapp = Setting.get("whatsapp") or SHOP_WHATSAPP
+        tagline = Setting.get("tagline") or ""
+        address = Setting.get("address") or ""
+        hours = Setting.get("hours") or ""
+    except Exception:                     # DB not created / not reachable yet
+        name, phone, whatsapp = SHOP_NAME, SHOP_PHONE, SHOP_WHATSAPP
+        tagline = address = hours = ""
+
+    wa = re.sub(r"\D", "", whatsapp) or SHOP_WHATSAPP
     return {
-        "name": Setting.get("shop_name", "SUS KIGALI HAIRCUT"),
-        "tagline": Setting.get("tagline", ""),
-        "phone": Setting.get("phone", ""),
-        "whatsapp": Setting.get("whatsapp", ""),
-        "address": Setting.get("address", ""),
-        "hours": Setting.get("hours", ""),
+        "name": name,
+        "tagline": tagline,
+        "phone": phone,
+        "phone_tel": tel_href(phone),
+        # wa.me needs bare digits; strip whatever the owner typed
+        "whatsapp": wa,
+        "whatsapp_display": whatsapp_display(wa),
+        "address": address,
+        "hours": hours,
     }
-
-
-@public_bp.app_context_processor
-def inject_shop():
-    return {"shop": shop()}
 
 
 @public_bp.route("/")

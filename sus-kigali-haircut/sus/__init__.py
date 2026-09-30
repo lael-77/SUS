@@ -6,8 +6,9 @@ from flask import Flask
 from config import Config
 from .models import db
 
-# expose for run.py: `from sus import db, seed_data`
-from .seed import seed_data  # noqa: E402,F401 (after models to avoid circular import)
+# expose for run.py: `from sus import db, seed_data, seed_demo, wipe_data`
+from .seed import seed_data, seed_demo, wipe_data  # noqa: E402,F401
+from .schema import ensure_schema  # noqa: E402,F401
 
 
 def create_app(config_class=Config):
@@ -37,5 +38,13 @@ def create_app(config_class=Config):
         from .auth import current_user
         u = current_user()
         return {"current_user_name": u.name if u else ""}
+
+    # shop identity (name / phone / WhatsApp) for every template — the public
+    # site, the admin dashboard and error pages all read the same dict.
+    from .public import shop
+
+    @app.context_processor
+    def inject_shop():
+        return {"shop": shop()}
 
     return app

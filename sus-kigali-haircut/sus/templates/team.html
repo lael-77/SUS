@@ -1,5 +1,5 @@
 {% extends "base_public.html" %}
-{% block title %}Our Team — SUS KIGALI HAIRCUT{% endblock %}
+{% block title %}Our Team — SUS Kigali Haircut{% endblock %}
 {% block content %}
 <section class="page-head">
   <div class="wrap">
@@ -22,12 +22,25 @@
     </div>
     {% endfor %}
   </div>
+  {% else %}
+  <div class="empty-state" data-reveal>
+    <h3>The chairs are staffed — the profiles are coming</h3>
+    <p>Our team page is being written up. In the meantime, come in and take the first
+      free chair, or call ahead and we'll tell you who's on the floor today.</p>
+    <div class="btn-row">
+      <a class="btn btn-gold" href="tel:{{ shop.phone_tel }}">📞 {{ shop.phone }}</a>
+      <a class="btn btn-outline" href="{{ url_for('public.booking') }}">Book a visit</a>
+    </div>
+  </div>
   {% endfor %}
 </section>
 
 <section class="hours-strip">
   <div class="wrap hours-inner">
     <div><strong>Can't decide?</strong><p>Take the first free chair — everyone on this floor is trained to the same standard.</p></div>
+    <div><strong>Talk to us</strong>
+      <p><a href="tel:{{ shop.phone_tel }}">{{ shop.phone }}</a></p>
+      <p><a href="https://wa.me/{{ shop.whatsapp }}" target="_blank" rel="noopener">Chat on WhatsApp</a></p></div>
     <div><a class="btn btn-gold" href="{{ url_for('public.booking') }}">Book Any Available</a></div>
   </div>
 </section>

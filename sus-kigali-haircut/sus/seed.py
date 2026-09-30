@@ -1,56 +1,136 @@
-"""First-run demo seed so the dashboard is immediately explorable.
+"""Database bootstrap and optional demo data.
 
-Login accounts created:
+Two clearly separated jobs live here:
+
+``seed_data()``   BOOTSTRAP. Guarantees the shop settings rows and one
+                  super-admin login exist so a brand-new installation is
+                  usable straight away. It runs on every start, never
+                  overwrites a value that is already stored, and creates
+                  **no demo business data**.
+``seed_demo()``   The full illustrative dataset (staff, service menu, sales
+                  history, charts) for exploring the dashboard: run
+                  ``python run.py reseed``.
+``wipe_data()``   Drops every table and re-bootstraps — a clean, empty shop:
+                  run ``python run.py clean``.
+
+Logins created by the bootstrap / demo data:
     owner@suskigali.rw     / admin123   (Super Admin / Owner)
-    manager@suskigali.rw   / manager123 (Manager)
-    eric@suskigali.rw      / eric123    (Worker login - Barber)
-    divine@suskigali.rw    / divine123  (Worker login - Hairstylist)
+    manager@suskigali.rw   / manager123 (Manager — demo data only)
+    eric@suskigali.rw      / eric123    (Worker login, Barber — demo only)
+    divine@suskigali.rw    / divine123  (Worker login, Hairstylist — demo only)
 """
 import random
 from datetime import date, timedelta
 
+from config import SHOP_NAME, SHOP_PHONE, SHOP_WHATSAPP
 from .models import (db, User, Setting, Worker, Service, Client, Appointment,
                      Expense, InventoryItem, Review)
 from .commission import record_transaction
 
 random.seed(42)  # deterministic demo data
 
-CAT_SERVICE = {
-    "Barber": ["Classic Haircut", "Beard Trim", "Haircut + Beard Combo",
-               "Kids Haircut", "Hair Coloring / Dye"],
-    "Hairstylist": ["Braiding / Weaving", "Hair Treatment", "Blow-dry & Styling"],
-    "Nail Technician": ["Manicure", "Pedicure", "Gel Full Set"],
+OWNER_EMAIL = "owner@suskigali.rw"
+OWNER_PASSWORD = "admin123"
+
+DEFAULT_SETTINGS = {
+    "shop_name": SHOP_NAME,
+    "tagline": "Where Kigali comes for a sharp cut.",
+    "phone": SHOP_PHONE,
+    "whatsapp": SHOP_WHATSAPP,
+    "address": "KN 4 Ave, Kigali City Centre, Rwanda",
+    "hours": "Mon-Sat 08:00 - 20:00, Sun 09:00 - 17:00",
+    "currency": "RWF",
+    "default_commission_rate": "20",   # only used when a service/worker has none
+    "commission_on_discounted": "1",   # commission on the amount actually paid
+    "restrict_service_category": "1",  # services locked to matching category
+    "pay_period": "monthly",           # daily / weekly / bi-weekly / monthly
+    "loyalty_visits_for_reward": "10",
 }
 
+# Contact numbers that shipped in early builds. They are placeholders, so if we
+# still find one in the database we replace it with the real number from
+# config.py — but a number the owner set themselves is never touched.
+_PLACEHOLDER_PHONES = {"", None, "+250 788 123 456", "+250788123456", "250788123456"}
 
+# Demo service menu: (name, description, price, minutes, category, worker %).
+# The percentage is what the person performing the service keeps — services are
+# deliberately NOT all the same. See sus/commission.py for the precedence rule.
+DEMO_SERVICES = [
+    ("Classic Haircut", "Sharp cut, hot towel finish", 10000, 30, "Barber", 50),
+    ("Beard Trim", "Line-up & sculpt", 5000, 15, "Barber", 40),
+    ("Haircut + Beard Combo", "The full package", 13000, 45, "Barber", 50),
+    ("Kids Haircut", "Under 12, patient & gentle", 7000, 30, "Barber", 45),
+    ("Hair Coloring / Dye", "Full colour service", 15000, 90, "Barber", 35),
+    ("Braiding / Weaving", "Installation included", 20000, 180, "Hairstylist", 45),
+    ("Hair Treatment", "Repair & moisture therapy", 12000, 60, "Hairstylist", 40),
+    ("Blow-dry & Styling", "Event-ready finish", 10000, 45, "Hairstylist", 40),
+    ("Manicure", "Shape, buff & polish", 6000, 40, "Nail Technician", 35),
+    ("Pedicure", "Soak, scrub & polish", 8000, 50, "Nail Technician", 35),
+    ("Gel Full Set", "Long-lasting gel nails", 15000, 75, "Nail Technician", 30),
+]
+
+CAT_SERVICE = {}  # category -> [service names], derived from DEMO_SERVICES
+for _spec in DEMO_SERVICES:
+    CAT_SERVICE.setdefault(_spec[4], []).append(_spec[0])
+
+
+# --------------------------------------------------------------------------- #
+#  Bootstrap — runs on every start                                             #
+# --------------------------------------------------------------------------- #
 def seed_data():
-    if User.query.first():
-        return  # already seeded
+    """Make the app usable: shop settings + one owner login, nothing else."""
+    for key, value in DEFAULT_SETTINGS.items():
+        if Setting.query.get(key) is None:
+            db.session.add(Setting(key=key, value=str(value)))
 
-    # ---- Settings (all configurable in Admin > Settings) ----
-    defaults = {
-        "shop_name": "SUS KIGALI HAIRCUT",
-        "tagline": "Where Kigali comes for a sharp cut.",
-        "phone": "+250 788 123 456",
-        "whatsapp": "250788123456",
-        "address": "KN 4 Ave, Kigali City Centre, Rwanda",
-        "hours": "Mon-Sat 08:00 - 20:00, Sun 09:00 - 17:00",
-        "currency": "RWF",
-        "default_commission_rate": "20",
-        "commission_on_discounted": "1",   # commission on amount actually paid
-        "restrict_service_category": "1",   # services locked to matching category
-        "pay_period": "monthly",            # weekly / bi_weekly / monthly
-        "loyalty_visits_for_reward": "10",
-    }
-    for k, v in defaults.items():
-        db.session.add(Setting(key=k, value=v))
+    if not User.query.first():
+        owner = User(name="Salon Owner", email=OWNER_EMAIL, role="super_admin")
+        owner.set_password(OWNER_PASSWORD)
+        db.session.add(owner)
 
-    # ---- Users ----
-    owner = User(name="Salon Owner", email="owner@suskigali.rw", role="super_admin")
-    owner.set_password("admin123")
+    db.session.commit()
+    sync_contact_details()
+
+
+def sync_contact_details():
+    """Replace placeholder contact numbers with the real ones in ``config.py``.
+
+    Anything that is not a known placeholder is left exactly as it is, so this
+    never fights with a number the owner typed into Admin > Settings.
+    Returns the list of setting keys it changed.
+    """
+    updated = []
+    for key, value in (("phone", SHOP_PHONE), ("whatsapp", SHOP_WHATSAPP)):
+        if Setting.get(key) in _PLACEHOLDER_PHONES:
+            Setting.set(key, value)
+            updated.append(key)
+    if updated:
+        db.session.commit()
+    return updated
+
+
+def wipe_data():
+    """Drop every table and re-create an empty shop (settings + owner only)."""
+    db.drop_all()
+    db.create_all()
+    seed_data()
+
+
+# --------------------------------------------------------------------------- #
+#  Demo data — `python run.py reseed`                                           #
+# --------------------------------------------------------------------------- #
+def seed_demo():
+    """Build the full illustrative dataset. No-op if real data already exists."""
+    if Service.query.first() or Worker.query.first():
+        return  # never mix demo rows into a shop that already has real data
+
+    seed_data()
+    owner = User.query.filter_by(email=OWNER_EMAIL).first()
+
+    # ---- Extra users for the demo (bootstrap already made the owner) ----
     manager = User(name="Aline Uwase", email="manager@suskigali.rw", role="manager")
     manager.set_password("manager123")
-    db.session.add_all([owner, manager])
+    db.session.add(manager)
 
     # ---- Workers (all categories treated the same way) ----
     worker_specs = [
@@ -75,23 +155,11 @@ def seed_data():
         db.session.add(w)
         workers.append(w)
 
-    # ---- Services (illustrative menu from documentation Section 5.3) ----
-    service_specs = [
-        ("Classic Haircut", "Sharp cut, hot towel finish", 10000, 30, "Barber"),
-        ("Beard Trim", "Line-up & sculpt", 5000, 15, "Barber"),
-        ("Haircut + Beard Combo", "The full package", 13000, 45, "Barber"),
-        ("Kids Haircut", "Under 12, patient & gentle", 7000, 30, "Barber"),
-        ("Hair Coloring / Dye", "Full colour service", 15000, 90, "Barber"),
-        ("Braiding / Weaving", "Installation included", 20000, 180, "Hairstylist"),
-        ("Hair Treatment", "Repair & moisture therapy", 12000, 60, "Hairstylist"),
-        ("Blow-dry & Styling", "Event-ready finish", 10000, 45, "Hairstylist"),
-        ("Manicure", "Shape, buff & polish", 6000, 40, "Nail Technician"),
-        ("Pedicure", "Soak, scrub & polish", 8000, 50, "Nail Technician"),
-        ("Gel Full Set", "Long-lasting gel nails", 15000, 75, "Nail Technician"),
-    ]
+    # ---- Services (illustrative menu; the % is what the worker keeps) ----
     services = {}
-    for name, desc, price, dur, cat in service_specs:
-        s = Service(name=name, description=desc, price=price, duration_minutes=dur, category=cat)
+    for name, desc, price, dur, cat, rate in DEMO_SERVICES:
+        s = Service(name=name, description=desc, price=price, duration_minutes=dur,
+                    category=cat, commission_rate=rate)
         db.session.add(s)
         services[name] = s
 

@@ -1,5 +1,5 @@
 {% extends "base_public.html" %}
-{% block title %}Contact &amp; Location — SUS KIGALI HAIRCUT{% endblock %}
+{% block title %}Contact &amp; Location — SUS Kigali Haircut{% endblock %}
 {% block content %}
 <section class="page-head">
   <div class="wrap">
@@ -12,8 +12,9 @@
   <div class="contact-grid">
     <div class="contact-card card" data-reveal>
       <h3>📞 Call us</h3>
-      <p><a class="big-link" href="tel:{{ shop.phone }}">{{ shop.phone }}</a></p>
+      <p><a class="big-link" href="tel:{{ shop.phone_tel }}">{{ shop.phone }}</a></p>
       <h3>💬 WhatsApp</h3>
+      <p class="muted small">{{ shop.whatsapp_display }}</p>
       <p><a class="btn btn-gold" href="https://wa.me/{{ shop.whatsapp }}" target="_blank" rel="noopener">Message us on WhatsApp</a></p>
       <h3>🕘 Opening hours</h3>
       <p>{{ shop.hours }}</p>
@@ -22,7 +23,7 @@
       <h3>📍 Find us</h3>
       <p>{{ shop.address }}</p>
       <div class="map-placeholder">
-        <p>Google Maps embed goes here<br><small>(KN 4 Ave, Kigali City Centre)</small></p>
+        <p>Google Maps embed goes here<br><small>{{ shop.address }}</small></p>
       </div>
     </div>
   </div>

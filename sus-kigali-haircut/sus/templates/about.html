@@ -1,5 +1,5 @@
 {% extends "base_public.html" %}
-{% block title %}About — SUS KIGALI HAIRCUT{% endblock %}
+{% block title %}About — SUS Kigali Haircut{% endblock %}
 {% block content %}
 <section class="page-head">
   <div class="wrap">
@@ -66,6 +66,9 @@
   <div class="wrap hours-inner">
     <div><strong>Visit us</strong><p>{{ shop.address }}</p></div>
     <div><strong>Opening hours</strong><p>{{ shop.hours }}</p></div>
+    <div><strong>Talk to us</strong>
+      <p><a href="tel:{{ shop.phone_tel }}">{{ shop.phone }}</a></p>
+      <p><a href="https://wa.me/{{ shop.whatsapp }}" target="_blank" rel="noopener">Chat on WhatsApp</a></p></div>
     <div><a class="btn btn-gold" href="{{ url_for('public.booking') }}">Book Now</a></div>
   </div>
 </section>
