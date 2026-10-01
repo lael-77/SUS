@@ -1,15 +1,38 @@
 """Smoke test: seed the DB and hit every route with Flask's test client.
 
 Run it from the project root:  python smoke_test.py
-It rebuilds a throwaway demo database first, so it is safe to run any time.
+
+It always runs against a throwaway SQLite file in the system temp directory,
+never the configured database, so it is safe to run at any time — including
+when ``.env`` points at a live Postgres instance.
 """
+import os
 import sys, io
+import tempfile
+
+# Force a disposable database *before* anything imports `config`, which reads
+# DATABASE_URL once at import time. `_load_env_file()` uses setdefault(), so an
+# explicit value here always wins over `.env`.
+_SMOKE_DB = os.path.join(tempfile.gettempdir(), "sus_smoke_test.db")
+if os.path.exists(_SMOKE_DB):
+    os.remove(_SMOKE_DB)
+os.environ["DATABASE_URL"] = "sqlite:///" + _SMOKE_DB
 
 sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
 
 from sus import create_app, db, seed_data, seed_demo, ensure_schema
 
 app = create_app()
+
+# Belt and braces: refuse to continue if we somehow ended up on a real server.
+with app.app_context():
+    backend = db.engine.url.get_backend_name()
+    if backend != "sqlite":
+        raise SystemExit(
+            f"Refusing to run: smoke_test needs a throwaway SQLite database, "
+            f"but got {backend!r}. It would drop every table."
+        )
+
 with app.app_context():
     db.drop_all()
     db.create_all()

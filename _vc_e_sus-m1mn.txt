@@ -1,0 +1,24 @@
+Vercel CLI 58.4.4 (Node.js 24.16.0)
+Retrieving project…
+> Environment Variables found for laels-projects-689d0398/sus-m1mn [1s]
+
+ name                        value               environments                        created    
+ POSTGRES_PASSWORD           Encrypted           Development, Preview, Production    3h ago     
+ POSTGRES_URL                Encrypted           Development, Preview, Production    3h ago     
+ POSTGRES_USER               Encrypted           Development, Preview, Production    3h ago     
+ DATABASE_URL_UNPOOLED       Encrypted           Development, Preview, Production    3h ago     
+ NEON_AUTH_BASE_URL          Encrypted           Development, Preview, Production    3h ago     
+ POSTGRES_URL_NO_SSL         Encrypted           Development, Preview, Production    3h ago     
+ PGHOST                      Encrypted           Development, Preview, Production    3h ago     
+ PGHOST_UNPOOLED             Encrypted           Development, Preview, Production    3h ago     
+ POSTGRES_PRISMA_URL         Encrypted           Development, Preview, Production    3h ago     
+ PGUSER                      Encrypted           Development, Preview, Production    3h ago     
+ POSTGRES_URL_NON_POOLING    Encrypted           Development, Preview, Production    3h ago     
+ POSTGRES_HOST               Encrypted           Development, Preview, Production    3h ago     
+ PGPASSWORD                  Encrypted           Development, Preview, Production    3h ago     
+ DATABASE_URL                Encrypted           Development, Preview, Production    3h ago     
+ POSTGRES_DATABASE           Encrypted           Development, Preview, Production    3h ago     
+ PGDATABASE                  Encrypted           Development, Preview, Production    3h ago     
+ NEON_PROJECT_ID             Encrypted           Development, Preview, Production    3h ago     
+ VITE_NEON_AUTH_URL          Encrypted           Development, Preview, Production    3h ago     
+

@@ -1,0 +1,6 @@
+Vercel CLI 58.4.4 (Node.js 24.16.0)
+Retrieving project…
+> Downloading `production` environment variables for laels-projects-689d0398/sus-m1mn
+Downloading
+
+✓ Created         .env.pulled file

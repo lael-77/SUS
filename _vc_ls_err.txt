@@ -1,0 +1,13 @@
+Vercel CLI 58.4.4 (Node.js 24.16.0)
+Retrieving project…
+Your Project was either deleted, transferred to a new Team, or you don’t have access to it anymore.
+Error: Your codebase isn’t linked to a project on Vercel. Pass --project <name>, or run `vercel link` to begin.
+╭──────────────────────────────────────────────────────────────────────────────╮
+│                                                                              │
+│                     Update available! v58.4.4 ≫ v61.1.0                      │
+│   Changelog: https://github.com/vercel/vercel/releases/tag/vercel%4061.1.0   │
+│                   Run `npm i -g vercel@latest` to update.                    │
+│                                                                              │
+│             The latest update may fix any errors that occurred.              │
+│                                                                              │
+╰──────────────────────────────────────────────────────────────────────────────╯
