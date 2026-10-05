@@ -154,9 +154,48 @@ whole site. Once a row exists in the database, **Admin › Settings** wins.
 
 ## Database
 
+The app talks to whichever database the environment points at. `config.py`
+resolves it in this order:
+
+1. **`DATABASE_URL` or `POSTGRES_URL`** — a hosted Postgres.
+2. **`VERCEL` set, but no connection string** — SQLite under `/tmp`, because
+   serverless filesystems are read-only everywhere else.
+3. **Anything else** — the SQLite file `sus_kigali.db` next to `config.py`.
+
+Whichever engine wins, the same schema is created on first import of `run.py`.
+
+### This project — Neon Postgres on Vercel
+
+The live site runs on Vercel with a Neon Postgres database attached to it. To
+work against that same database from this machine:
+
+```bash
+vercel link --yes --project <project-name>
+vercel env pull .env.pulled --environment=production
+```
+
+Copy the `POSTGRES_URL` value into `sus-kigali-haircut/.env` as `DATABASE_URL`,
+and add a `SECRET_KEY`:
+
+```
+DATABASE_URL=postgresql://user:password@host/dbname?sslmode=require&channel_binding=require
+SECRET_KEY=<64 hex characters>
+```
+
+`.env` is gitignored — never commit it. `config.py` loads it with
+`os.environ.setdefault()`, so a real environment variable always beats the file.
+Delete `.env` (or blank out `DATABASE_URL`) to drop back to SQLite.
+
+Then `python run.py` creates the schema and bootstraps the settings rows and the
+owner login the first time it runs. Nothing else is required.
+
+> **Note:** `smoke_test.py` always uses a throwaway SQLite file in the system
+> temp directory and refuses to start if it ever finds itself on a real server,
+> so it is safe to run while `.env` points at production.
+
 ### Local development — SQLite
 
-Out of the box the app uses `sus_kigali.db`, a SQLite file next to `config.py`.
+With no `.env` the app uses `sus_kigali.db`, a SQLite file next to `config.py`.
 Nothing to install, nothing to configure.
 
 ### Production / Vercel — Postgres
@@ -169,22 +208,33 @@ hosted Postgres — Vercel Postgres, Neon, Supabase and Railway all work.
    *Storage* → *Create Database* → *Postgres*, or attach a Neon database through
    the *Neon* integration. Either way you end up with a connection string.
 
-2. **Expose the connection string.** Vercel Postgres sets `POSTGRES_URL`
-   automatically; the app also accepts `DATABASE_URL`. Add it to the project's
-   environment variables if your provider uses another name:
+2. **Expose the connection string.** Vercel Postgres and the Neon integration
+   set `POSTGRES_URL` automatically; the app also accepts `DATABASE_URL`. Add it
+   to the project's environment variables if your provider uses another name:
 
    ```
    DATABASE_URL=postgresql://user:password@host/dbname?sslmode=require
    ```
 
    Both `postgres://` and `postgresql://` are accepted —
-   `config.database_uri()` rewrites them to the `postgresql+psycopg://` form
-   SQLAlchemy 2.x requires.
+   `config._database_settings()` rewrites them to include an explicit driver
+   name, which SQLAlchemy 2.x requires.
 
-3. **Install the driver.** It is already in `requirements.txt`:
+   It picks `postgresql+psycopg` when psycopg is importable (the Linux container
+   on Vercel) and falls back to `postgresql+pg8000` otherwise. pg8000 is pure
+   Python, so it still works on Windows machines whose Application Control policy
+   blocks psycopg's compiled `pq` extension. The only visible difference is that
+   pg8000 cannot read libpq's `sslmode` / `channel_binding` query parameters, so
+   for that driver the query string is dropped and a real TLS context is passed
+   instead — connections are still encrypted.
+
+
+3. **Install the drivers.** Both are already in `requirements.txt` —
+   `psycopg[binary]` for the Vercel container and `pg8000` as the portable
+   fallback:
 
    ```bash
-   python -m pip install -r requirements.txt   # installs psycopg[binary]
+   python -m pip install -r requirements.txt
    ```
 
 4. **Create the schema.** The app does it on the first request. `run.py` calls

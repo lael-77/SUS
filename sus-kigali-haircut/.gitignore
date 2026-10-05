@@ -9,6 +9,13 @@ venv/
 sus_kigali.db
 instance/
 
+# Local environment — holds the Neon/Vercel Postgres URL and SECRET_KEY.
+# Never commit these; regenerate with:
+#     vercel env pull .env.pulled --environment=production
+.env
+.env.*
+!.env.example
+
 # Dev server output
 server.log
 server.err.log

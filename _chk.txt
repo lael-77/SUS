@@ -1,3 +1,0 @@
-resolved URI : postgresql+psycopg://USER:PW@ep-fancy-bonus-autcp39l-pooler.c-10.us-east-1.aws.neon.tech/neondb?channel_binding=require&sslmode=require
-dialect      : postgresql+psycopg
-

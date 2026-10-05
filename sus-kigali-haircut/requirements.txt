@@ -1,6 +1,11 @@
 flask>=3.0
 flask-sqlalchemy>=3.1
-# Postgres driver — only needed when DATABASE_URL points at Vercel Postgres /
-# Neon / Supabase. The [binary] extra ships prebuilt wheels so no compiler is
-# required. SQLite (the local default) needs nothing extra.
+# Postgres drivers — only needed when DATABASE_URL points at Vercel Postgres /
+# Neon / Supabase. `psycopg[binary]` is the fast one and ships prebuilt wheels,
+# so no compiler is required; it is what the Linux container on Vercel uses.
 psycopg[binary]>=3.1
+# `pg8000` is pure Python. Windows machines with Smart App Control enabled
+# sometimes refuse to load psycopg's native `pq` extension; config.py falls
+# back to this so the same DATABASE_URL works on every machine. SQLite (the
+# local default) needs neither.
+pg8000>=1.30

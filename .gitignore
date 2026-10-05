@@ -3,3 +3,14 @@
 __pycache__/
 *.pyc
 *.db
+
+# Throwaway debug/scratch files — never commit these
+_*_tmp.py
+_vc_*.txt
+_chk*.txt
+_git*.txt
+_probe*.txt
+_live*.txt
+_secret*.txt
+smoke_out.txt
+

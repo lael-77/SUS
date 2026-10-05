@@ -1,3 +1,0 @@
-Vercel CLI 58.4.4 (Node.js 24.16.0)
-Retrieving project…
-> No Environment Variables found for laels-projects-689d0398/sus-1 [1s]
