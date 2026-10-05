@@ -1,0 +1,18 @@
+Wire the app to the Neon database and clean up dev scratch
+
+Database
+- requirements.txt and pyproject.toml now declare pg8000 alongside
+  psycopg[binary], so the same DATABASE_URL works on the Vercel Linux
+  container and on machines whose Application Control policy blocks
+  psycopg's compiled extension. config.py picks whichever one imports.
+- README documents how the connection string is resolved, how to pull it
+  down from Vercel, and what each driver needs.
+
+Hygiene
+- The app directory's .gitignore now covers .env (previously only the root
+  one did), and the root ignore file also covers .vercel and every
+  throwaway _*_tmp / _vc_* scratch file, so secrets and debug debris cannot
+  be committed again.
+- Deleted the temporary provisioning, probing and vercel-CLI capture files
+  that had been committed to this public repository. None of them contained
+  credentials: the connection strings in them were masked to USER:PW.

@@ -1,0 +1,41 @@
+﻿M  .gitignore
+D  _check_db_tmp.py
+D  _chk.txt
+D  _chk_err.txt
+D  _cols_tmp.py
+D  _init_db_tmp.py
+D  _probe_tmp.py
+D  _setup_env_tmp.py
+D  _vc_e_sus-1.txt
+D  _vc_e_sus-m1mn.txt
+D  _vc_link.txt
+D  _vc_ls.txt
+D  _vc_ls_err.txt
+D  _vc_proj.txt
+D  _vc_pull.txt
+M  sus-kigali-haircut/.gitignore
+M  sus-kigali-haircut/README.md
+M  sus-kigali-haircut/pyproject.toml
+M  sus-kigali-haircut/requirements.txt
+D  sus-kigali-haircut/smoke_out.txt
+ .gitignore                          |  11 ++++++
+ _check_db_tmp.py                    |  40 ----------------------
+ _chk.txt                            |   3 --
+ _chk_err.txt                        |  11 ------
+ _cols_tmp.py                        |  32 -----------------
+ _init_db_tmp.py                     |  42 -----------------------
+ _probe_tmp.py                       |  59 --------------------------------
+ _setup_env_tmp.py                   |  56 ------------------------------
+ _vc_e_sus-1.txt                     |   3 --
+ _vc_e_sus-m1mn.txt                  |  24 -------------
+ _vc_link.txt                        |  15 --------
+ _vc_ls.txt                          |   0
+ _vc_ls_err.txt                      |  13 -------
+ _vc_proj.txt                        |  15 --------
+ _vc_pull.txt                        |   6 ----
+ sus-kigali-haircut/.gitignore       |   7 ++++
+ sus-kigali-haircut/README.md        |  66 +++++++++++++++++++++++++++++++-----
+ sus-kigali-haircut/pyproject.toml   |   1 +
+ sus-kigali-haircut/requirements.txt |  11 ++++--
+ sus-kigali-haircut/smoke_out.txt    | Bin 1446 -> 0 bytes
+ 20 files changed, 85 insertions(+), 330 deletions(-)
