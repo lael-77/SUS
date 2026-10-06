@@ -36,9 +36,9 @@
     <label>Price (RWF)<input type="number" name="price" id="sf-price" required></label>
     <label>Duration (minutes)<input type="number" name="duration_minutes" id="sf-duration" value="30"></label>
     <label>Worker commission %
-      <input type="number" step="0.5" min="0" max="100" name="commission_rate" id="sf-rate"
-             placeholder="blank = {{ default_rate }}%">
-      <small class="muted">What the worker keeps on this service. Blank falls back to the worker's own rate, then the shop default ({{ default_rate }}%).</small>
+      <input type="number" step="any" min="0" max="100" inputmode="decimal"
+             name="commission_rate" id="sf-rate" placeholder="blank = {{ default_rate }}%">
+      <small class="muted">Any percentage is allowed, e.g. <code>17.5</code> or <code>33</code> — the commission is worked out from exactly what you type. Blank falls back to the worker's own rate, then the shop default ({{ default_rate }}%).</small>
     </label>
     <label class="span2">Description<input name="description" id="sf-desc"></label>
     <label class="check"><input type="checkbox" name="active" id="sf-active" checked> Active (visible on website)</label>

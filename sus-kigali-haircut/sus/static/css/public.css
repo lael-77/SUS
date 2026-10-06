@@ -354,6 +354,14 @@
 }
 .step h3 { font-size: var(--fs-md); margin-bottom: var(--s2); }
 .step p { font-size: var(--fs-sm); color: var(--text-soft); max-width: none; }
+/* Step cards inside a dark section (home page "Four steps to the chair").
+   The dark section paints every heading with --on-dark, so the card itself
+   has to be dark as well — a white card would render the step names
+   invisible (near-white text on a white surface). */
+.section-dark .step {
+  background: var(--ink-3); border-color: var(--line-dark); box-shadow: none;
+}
+.section-dark .step p { color: var(--on-dark-soft); }
 
 
 /* --------------------------------------------------------------------------

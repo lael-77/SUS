@@ -21,8 +21,9 @@
     <h2>Commission &amp; payroll rules</h2>
     <div class="form-grid">
       <label>Default commission rate (%)
-        <input type="number" name="default_commission_rate" step="0.5" value="{{ settings.default_commission_rate }}"></label>
-      <p class="muted small span2">Used only as the last resort. A service's own percentage
+        <input type="number" name="default_commission_rate" step="any" min="0" max="100"
+               inputmode="decimal" value="{{ settings.default_commission_rate }}"></label>
+      <p class="muted small span2">Any percentage is allowed, e.g. <code>18.75</code>. Used only as the last resort. A service's own percentage
         (Admin &rsaquo; Services &amp; Prices) wins, then the worker's own rate (Admin &rsaquo; Workers).</p>
       <label>Commission on discounted price?
         <select name="commission_on_discounted">

@@ -151,7 +151,9 @@ def worker_save():
     w.specialty = f.get("specialty", "").strip() or None
     w.pay_type = f.get("pay_type", "commission")
     w.base_salary = int(f.get("base_salary") or 0)
-    w.commission_rate = float(rate) if rate else None
+    # Same parser as services: trims stray "%", accepts any decimal, and
+    # clamps to 0–100 so a typo can never over- or under-pay a worker.
+    w.commission_rate = _pct(rate)
     w.status = f.get("status", "active")
 
     # optional login for the worker
@@ -599,7 +601,15 @@ def settings_save():
               "currency", "default_commission_rate", "commission_on_discounted",
               "restrict_service_category", "pay_period", "loyalty_visits_for_reward"):
         if k in request.form:
-            Setting.set(k, request.form[k].strip())
+            value = request.form[k].strip()
+            if k == "default_commission_rate":
+                # Normalise to a clean 0–100 number so any decimal the owner
+                # types (17.5, 18.75 …) is kept exactly; blank keeps the old one.
+                pct = _pct(value)
+                if pct is None:
+                    continue
+                value = "%g" % pct
+            Setting.set(k, value)
     db.session.commit()
     return redirect(url_for("admin.settings"))
 
